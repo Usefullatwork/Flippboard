@@ -72,7 +72,6 @@ export class QuoteManagerComponent {
 
     // Compose Form & Palette buttons
     const composeText = document.getElementById('compose-text');
-    const charCounter = document.getElementById('char-counter');
     const miniBoard = document.getElementById('mini-board-preview');
     const tileBtns = document.querySelectorAll('.tile-btn');
 
@@ -81,7 +80,9 @@ export class QuoteManagerComponent {
 
     const updatePreview = () => {
       const val = composeText.value;
-      charCounter.textContent = val.length;
+      // Re-query each time: handleMatrixResize recreates #char-counter
+      const counterEl = document.getElementById('char-counter');
+      if (counterEl) counterEl.textContent = val.length;
       this.updateMiniBoardPreview(miniBoard, val);
     };
 
@@ -174,6 +175,8 @@ export class QuoteManagerComponent {
       composeText.setAttribute('maxlength', totalFlaps);
       composeText.placeholder = `Enter message (max ${rows} lines, ${cols} chars per line)...`;
     }
+    const quickInput = document.getElementById('quick-message-input');
+    if (quickInput) quickInput.setAttribute('maxlength', totalFlaps);
     const charCounterMax = document.querySelector('.text-counter');
     if (charCounterMax) {
       const composeVal = composeText ? composeText.value.length : 0;

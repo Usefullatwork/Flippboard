@@ -72,18 +72,30 @@ export class BoardComponent {
     // Clear any active/queued timeouts from previous flips
     this.clearPendingTimeouts();
 
+    // Pre-count changed flaps and cap the total cascade at ~1.6s so giant
+    // boards (400 flaps) finish before the minimum 5s playback interval
+    let changedCount = 0;
+    for (let r = 0; r < BOARD_ROWS; r++) {
+      for (let c = 0; c < BOARD_COLS; c++) {
+        const cur = this.currentMatrix[r] ? this.currentMatrix[r][c] : null;
+        const tgt = targetMatrix[r][c];
+        if (cur && (cur.char !== tgt.char || cur.colorClass !== tgt.colorClass)) changedCount++;
+      }
+    }
+    const stagger = changedCount ? Math.min(12, 1600 / changedCount) : 0;
+
     let delayCounter = 0;
 
     for (let r = 0; r < BOARD_ROWS; r++) {
       for (let c = 0; c < BOARD_COLS; c++) {
-        const currentCell = this.currentMatrix[r][c];
-        const targetCell = targetMatrix[r][c];
         const flapEl = this.flapElements[r] ? this.flapElements[r][c] : null;
-        if (!flapEl) continue;
+        const currentCell = this.currentMatrix[r] ? this.currentMatrix[r][c] : null;
+        const targetCell = targetMatrix[r][c];
+        if (!flapEl || !currentCell) continue;
 
         // Check if character or color tile changed
         if (currentCell.char !== targetCell.char || currentCell.colorClass !== targetCell.colorClass) {
-          const staggerDelay = delayCounter * 12; // 12ms stagger per changing flap
+          const staggerDelay = delayCounter * stagger;
           delayCounter++;
 
           const tId = setTimeout(() => {
@@ -167,10 +179,15 @@ export class BoardComponent {
     // Trigger mechanical clack sound
     audioEngine.playFlapClick();
 
-    // After flip animation finishes, update lower background character
-    const duration = this.getAnimationDurationMs();
+    // After the flip animation finishes, normalize the flap to its at-rest
+    // state. The flipper stays visible at rotateX(0) covering the upper half,
+    // so the front face MUST be updated to the new char here — otherwise the
+    // flap shows the old char's top half over the new char's bottom half.
+    // +50ms buffer so the CSS animation always completes before the snap-back.
+    const duration = this.getAnimationDurationMs() + 50;
     const cleanupId = setTimeout(() => {
       if (lowerText) lowerText.textContent = newChar;
+      if (frontText) frontText.textContent = newChar;
       if (flipper) flipper.classList.remove('flipping');
     }, duration);
     this.pendingTimeouts.push(cleanupId);
@@ -179,7 +196,10 @@ export class BoardComponent {
   setDimensions(rows, cols) {
     this.screenElement.style.setProperty('--board-rows', rows);
     this.screenElement.style.setProperty('--board-cols', cols);
-    
+    // Physical width scales with column count (~50px/col, 22 cols = 1100px);
+    // consumed by .vestaboard-screen width calc in vestaboard.css
+    this.screenElement.style.setProperty('--board-width', `${cols * 50}px`);
+
     // Compute exact grid aspect ratio and provide it to CSS to avoid calc() division parsing bugs
     const aspectRatio = (cols * 42) / (rows * 60);
     document.documentElement.style.setProperty('--board-aspect-ratio', aspectRatio);

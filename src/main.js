@@ -12,6 +12,7 @@ class VestaboardStudioApp {
   constructor() {
     this.customQuotes = this.loadCustomQuotes();
     this.allQuotes = [...DEFAULT_QUOTES, ...this.customQuotes];
+    this.settings = this.loadSettings();
 
     this.currentIndex = 0;
     this.currentMode = 'sequential'; // 'sequential', 'random', 'daily', 'clock'
@@ -121,23 +122,34 @@ class VestaboardStudioApp {
         this.displayCurrentQuote();
       },
       onMatrixSizeChange: (rows, cols) => {
-        VestaboardEngine.setMatrixDimensions(rows, cols);
-        this.board.setDimensions(rows, cols);
-        if (this.quoteManager) this.quoteManager.handleMatrixResize(rows, cols);
+        Object.assign(this.settings, { rows, cols });
+        this.saveSettings();
+        this.applyMatrixSize(rows, cols);
         this.displayCurrentQuote();
       },
       onZoomChange: (scale) => {
+        this.settings.scale = scale;
+        this.saveSettings();
         document.documentElement.style.setProperty('--board-scale', scale);
       },
       onViewportFillChange: (isFill) => {
-        const viewport = document.querySelector('.board-viewport');
-        if (isFill) {
-          viewport.classList.add('fill-viewport');
-        } else {
-          viewport.classList.remove('fill-viewport');
-        }
+        this.settings.fillViewport = isFill;
+        this.saveSettings();
+        document.querySelector('.board-viewport').classList.toggle('fill-viewport', isFill);
       }
     });
+
+    // Restore persisted board sizing before the first render so the saved
+    // matrix/zoom/fill state applies from the very first flip
+    this.applyMatrixSize(this.settings.rows, this.settings.cols);
+    document.documentElement.style.setProperty('--board-scale', this.settings.scale);
+    document.querySelector('.board-viewport').classList.toggle('fill-viewport', this.settings.fillViewport);
+    const matrixSelect = document.getElementById('matrix-size-select');
+    if (matrixSelect) matrixSelect.value = `${this.settings.rows}x${this.settings.cols}`;
+    const zoomSlider = document.getElementById('board-zoom-slider');
+    if (zoomSlider) zoomSlider.value = this.settings.scale;
+    const fillCheckbox = document.getElementById('setting-fill-viewport');
+    if (fillCheckbox) fillCheckbox.checked = this.settings.fillViewport;
 
     // Handle URL Hash Quote loading if present (e.g. #msg=Hello%20World)
     const hash = window.location.hash;
@@ -191,6 +203,25 @@ class VestaboardStudioApp {
     } catch (e) {
       return [];
     }
+  }
+
+  applyMatrixSize(rows, cols) {
+    VestaboardEngine.setMatrixDimensions(rows, cols);
+    this.board.setDimensions(rows, cols);
+    if (this.quoteManager) this.quoteManager.handleMatrixResize(rows, cols);
+  }
+
+  loadSettings() {
+    const defaults = { rows: 6, cols: 22, scale: 1, fillViewport: false };
+    try {
+      return { ...defaults, ...JSON.parse(localStorage.getItem('vestaboard_settings')) };
+    } catch (e) {
+      return defaults;
+    }
+  }
+
+  saveSettings() {
+    localStorage.setItem('vestaboard_settings', JSON.stringify(this.settings));
   }
 
   saveCustomQuote(newQuote) {

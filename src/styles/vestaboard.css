@@ -370,7 +370,7 @@ body.backdrop-pitch-black {
   padding: 1rem 0;
   flex: 1;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 
 .board-viewport.fill-viewport .vestaboard-frame,
@@ -1232,8 +1232,10 @@ body.kiosk-mode .main-content {
   height: 100vh;
 }
 
-body.kiosk-mode .vestaboard-frame {
-  transform: scale(1.18);
+/* Kiosk frame already fills the screen via the 95vw + aspect-ratio rules;
+   keep the viewport scroll-free so nothing bleeds past the fullscreen edge */
+body.kiosk-mode .board-viewport {
+  overflow: hidden;
 }
 
 /* Screensaver Countdown Toast */

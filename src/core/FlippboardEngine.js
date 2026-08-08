@@ -183,8 +183,16 @@ export class FlippboardEngine {
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase();
     const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-    
-    return `{blue}{blue}{blue} TIME & DATE {blue}{blue}{blue}\n\n    ${timeStr}\n  ${dateStr}\n\n{violet}{violet}{violet}{violet}{violet}{violet}{violet}{violet}{violet}{violet}{violet}`;
+
+    // Build header/footer from live board dims so every matrix preset fits:
+    // "TIME & DATE" + surrounding spaces occupies 13 flaps per line
+    const side = Math.max(0, Math.floor((BOARD_COLS - 13) / 2));
+    const header = `${'{blue}'.repeat(side)} TIME & DATE ${'{blue}'.repeat(side)}`.trim();
+    const footer = '{violet}'.repeat(Math.floor(BOARD_COLS / 2));
+    const lines = BOARD_ROWS >= 6
+      ? [header, '', timeStr, dateStr, '', footer]
+      : [header, timeStr, dateStr, footer];
+    return lines.join('\n');
   }
 }
 
