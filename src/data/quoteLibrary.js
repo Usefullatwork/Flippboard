@@ -39,6 +39,117 @@ export const DEFAULT_QUOTES = [
     active: true
   },
 
+  // Instagram-style motivation
+  {
+    id: "insp-6",
+    category: "inspirational",
+    text: "DREAM BIG\nSTART SMALL\nACT NOW",
+    author: "Robin Sharma",
+    active: true
+  },
+  {
+    id: "insp-7",
+    category: "inspirational",
+    text: "{yellow} NO ZERO DAYS {yellow}",
+    author: "Daily Motivation",
+    active: true
+  },
+  {
+    id: "insp-8",
+    category: "inspirational",
+    text: "PROVE THEM WRONG",
+    author: "Daily Motivation",
+    active: true
+  },
+  {
+    id: "insp-9",
+    category: "inspirational",
+    text: "{green} MAKE IT HAPPEN {green}",
+    author: "Daily Motivation",
+    active: true
+  },
+
+  // Daily Wisdom — Modern Wisdom podcast staples
+  {
+    id: "wisdom-1",
+    category: "wisdom",
+    text: "THE MAGIC YOU ARE LOOKING FOR IS IN THE WORK YOU ARE AVOIDING",
+    author: "Dipen Parmar",
+    active: true
+  },
+  {
+    id: "wisdom-2",
+    category: "wisdom",
+    text: "DESIRE IS A CONTRACT YOU MAKE WITH YOURSELF TO BE UNHAPPY UNTIL YOU GET WHAT YOU WANT",
+    author: "Naval Ravikant",
+    active: true
+  },
+  {
+    id: "wisdom-3",
+    category: "wisdom",
+    text: "THE WORK WORKS ON YOU MORE THAN YOU WORK ON IT",
+    author: "Alex Hormozi",
+    active: true
+  },
+  {
+    id: "wisdom-4",
+    category: "wisdom",
+    text: "DISCIPLINE EQUALS FREEDOM",
+    author: "Jocko Willink",
+    active: true
+  },
+  {
+    id: "wisdom-5",
+    category: "wisdom",
+    text: "YOU CAN'T READ THE LABEL FROM INSIDE THE JAR",
+    author: "Modern Wisdom",
+    active: true
+  },
+
+  // Founders — David Senra / Founders Podcast
+  {
+    id: "founders-1",
+    category: "founders",
+    text: "EXCELLENCE IS THE CAPACITY TO TAKE PAIN",
+    author: "David Senra",
+    active: true
+  },
+  {
+    id: "founders-2",
+    category: "founders",
+    text: "BELIEF COMES BEFORE ABILITY",
+    author: "David Senra",
+    active: true
+  },
+  {
+    id: "founders-3",
+    category: "founders",
+    text: "HISTORY DOESN'T REPEAT ITSELF\nHUMAN NATURE DOES",
+    author: "David Senra",
+    active: true
+  },
+  {
+    id: "founders-4",
+    category: "founders",
+    text: "PROBLEMS ARE JUST OPPORTUNITIES IN WORK CLOTHES",
+    author: "Henry J. Kaiser",
+    active: true
+  },
+  {
+    id: "founders-5",
+    category: "founders",
+    text: "{orange} HARD WORK WORKS {orange}",
+    author: "David Senra",
+    active: true
+  },
+  {
+    id: "founders-6",
+    category: "founders",
+    text: "THE WORLD IS A VERY MALLEABLE PLACE",
+    author: "Marc Andreessen",
+    active: true
+  },
+
   // Tech & Innovation
   {
     id: "tech-1",
