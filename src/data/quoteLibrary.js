@@ -105,6 +105,41 @@ export const DEFAULT_QUOTES = [
     author: "Modern Wisdom",
     active: true
   },
+  {
+    id: "wisdom-6",
+    category: "wisdom",
+    text: "A FOCUSED FOOL CAN ACCOMPLISH MORE THAN A DISTRACTED GENIUS",
+    author: "Alex Hormozi",
+    active: true
+  },
+  {
+    id: "wisdom-7",
+    category: "wisdom",
+    text: "YOU CAN'T LOSE IF YOU DON'T QUIT",
+    author: "Alex Hormozi",
+    active: true
+  },
+  {
+    id: "wisdom-8",
+    category: "wisdom",
+    text: "PATIENCE IS FIGURING OUT WHAT TO DO IN THE MEANTIME",
+    author: "Alex Hormozi",
+    active: true
+  },
+  {
+    id: "wisdom-9",
+    category: "wisdom",
+    text: "WE WISH FOR THE PRIZE BUT NOT FOR THE PRICE",
+    author: "Alex Hormozi",
+    active: true
+  },
+  {
+    id: "wisdom-10",
+    category: "wisdom",
+    text: "WE FALL TO THE STANDARDS WE HAVE WHEN NO ONE IS WATCHING",
+    author: "Alex Hormozi",
+    active: true
+  },
 
   // Founders — David Senra / Founders Podcast
   {
