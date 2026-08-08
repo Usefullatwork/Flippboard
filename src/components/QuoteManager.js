@@ -167,6 +167,29 @@ export class QuoteManagerComponent {
     this.renderCuratedQuotes();
   }
 
+  handleMatrixResize(rows, cols) {
+    const composeText = document.getElementById('compose-text');
+    const totalFlaps = rows * cols;
+    if (composeText) {
+      composeText.setAttribute('maxlength', totalFlaps);
+      composeText.placeholder = `Enter message (max ${rows} lines, ${cols} chars per line)...`;
+    }
+    const charCounterMax = document.querySelector('.text-counter');
+    if (charCounterMax) {
+      const composeVal = composeText ? composeText.value.length : 0;
+      charCounterMax.innerHTML = `<span id="char-counter">${composeVal}</span> / ${totalFlaps} characters (${totalFlaps} flaps)`;
+    }
+    const miniBoard = document.getElementById('mini-board-preview');
+    if (miniBoard) {
+      miniBoard.style.gridTemplateRows = `repeat(${rows}, 12px)`;
+      miniBoard.style.gridTemplateColumns = `repeat(${cols}, 12px)`;
+      this.initMiniBoard(miniBoard);
+      if (composeText) {
+        this.updateMiniBoardPreview(miniBoard, composeText.value);
+      }
+    }
+  }
+
   open() {
     this.modalEl.classList.remove('hidden');
     this.renderCuratedQuotes();
@@ -293,9 +316,9 @@ export class QuoteManagerComponent {
     const matrix = VestaboardEngine.formatTextToMatrix(rawText);
     for (let r = 0; r < BOARD_ROWS; r++) {
       for (let c = 0; c < BOARD_COLS; c++) {
-        const cell = matrix[r][c];
+        const cell = matrix[r] ? matrix[r][c] : null;
         const flap = container.querySelector(`#mini-f-${r}-${c}`);
-        if (flap) {
+        if (flap && cell) {
           flap.style.background = cell.isColor ? this.getColorHex(cell.colorClass) : '#222';
           flap.textContent = cell.isColor ? '' : cell.char;
         }
@@ -317,3 +340,4 @@ export class QuoteManagerComponent {
     return map[className] || '#222';
   }
 }
+

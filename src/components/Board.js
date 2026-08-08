@@ -7,17 +7,27 @@ export class BoardComponent {
     this.currentMatrix = Array.from({ length: BOARD_ROWS }, () =>
       Array.from({ length: BOARD_COLS }, () => ({ char: ' ', isColor: false, colorClass: '' }))
     );
-    this.flapElements = []; // 6x22 2D array of DOM nodes
+    this.flapElements = []; // 6x22 (or dynamic) 2D array of DOM nodes
     this.alignMode = 'center';
     this.speedMode = 'realistic';
+    this.pendingTimeouts = [];
 
     this.initDOM();
   }
 
   /**
-   * Initializes the 6x22 grid DOM elements with crisp split-flap leaf structure.
+   * Clears all pending animation timeouts to prevent race conditions during rapid flips.
+   */
+  clearPendingTimeouts() {
+    this.pendingTimeouts.forEach(t => clearTimeout(t));
+    this.pendingTimeouts = [];
+  }
+
+  /**
+   * Initializes the grid DOM elements with crisp split-flap leaf structure.
    */
   initDOM() {
+    this.clearPendingTimeouts();
     this.screenElement.innerHTML = '';
     this.flapElements = [];
 
@@ -59,22 +69,27 @@ export class BoardComponent {
    * Cascading flip animation comparing current vs target matrix.
    */
   flipToMatrix(targetMatrix) {
+    // Clear any active/queued timeouts from previous flips
+    this.clearPendingTimeouts();
+
     let delayCounter = 0;
 
     for (let r = 0; r < BOARD_ROWS; r++) {
       for (let c = 0; c < BOARD_COLS; c++) {
         const currentCell = this.currentMatrix[r][c];
         const targetCell = targetMatrix[r][c];
-        const flapEl = this.flapElements[r][c];
+        const flapEl = this.flapElements[r] ? this.flapElements[r][c] : null;
+        if (!flapEl) continue;
 
         // Check if character or color tile changed
         if (currentCell.char !== targetCell.char || currentCell.colorClass !== targetCell.colorClass) {
           const staggerDelay = delayCounter * 12; // 12ms stagger per changing flap
           delayCounter++;
 
-          setTimeout(() => {
+          const tId = setTimeout(() => {
             this.animateSingleFlap(flapEl, currentCell, targetCell);
           }, staggerDelay);
+          this.pendingTimeouts.push(tId);
         } else {
           // Keep static flap updated
           this.setFlapStatic(flapEl, targetCell);
@@ -86,6 +101,7 @@ export class BoardComponent {
   }
 
   setFlapStatic(flapEl, cell) {
+    if (!flapEl) return;
     flapEl.className = 'split-flap';
     if (cell.isColor) {
       flapEl.classList.add(cell.colorClass);
@@ -95,18 +111,31 @@ export class BoardComponent {
     const lowerText = flapEl.querySelector('.flap-lower .flap-text');
     const frontText = flapEl.querySelector('.face-front .flap-text');
     const backText = flapEl.querySelector('.face-back .flap-text');
+    const flipper = flapEl.querySelector('.flap-flipper');
+
+    if (flipper) flipper.classList.remove('flipping');
 
     const charVal = cell.isColor ? '' : cell.char;
-    upperText.textContent = charVal;
-    lowerText.textContent = charVal;
-    frontText.textContent = charVal;
-    backText.textContent = charVal;
+    if (upperText) upperText.textContent = charVal;
+    if (lowerText) lowerText.textContent = charVal;
+    if (frontText) frontText.textContent = charVal;
+    if (backText) backText.textContent = charVal;
+  }
+
+  /**
+   * Gets animation duration in ms based on speedMode setting.
+   */
+  getAnimationDurationMs() {
+    if (this.speedMode === 'fast') return 150;
+    if (this.speedMode === 'slow') return 500;
+    return 280; // realistic default
   }
 
   /**
    * Animates a single flap cell transition.
    */
   animateSingleFlap(flapEl, oldCell, newCell) {
+    if (!flapEl) return;
     const upperText = flapEl.querySelector('.flap-upper .flap-text');
     const lowerText = flapEl.querySelector('.flap-lower .flap-text');
     const frontText = flapEl.querySelector('.face-front .flap-text');
@@ -123,24 +152,28 @@ export class BoardComponent {
     const newChar = newCell.isColor ? '' : newCell.char;
 
     // Set leaf characters for flip transition
-    frontText.textContent = oldChar;
-    backText.textContent = newChar;
-    upperText.textContent = newChar;
-    lowerText.textContent = oldChar;
+    if (frontText) frontText.textContent = oldChar;
+    if (backText) backText.textContent = newChar;
+    if (upperText) upperText.textContent = newChar;
+    if (lowerText) lowerText.textContent = oldChar;
 
     // Restart CSS flip animation
-    flipper.classList.remove('flipping');
-    void flipper.offsetWidth; // trigger reflow
-    flipper.classList.add('flipping');
+    if (flipper) {
+      flipper.classList.remove('flipping');
+      void flipper.offsetWidth; // trigger reflow
+      flipper.classList.add('flipping');
+    }
 
     // Trigger mechanical clack sound
     audioEngine.playFlapClick();
 
     // After flip animation finishes, update lower background character
-    setTimeout(() => {
-      lowerText.textContent = newChar;
-      flipper.classList.remove('flipping');
-    }, 280);
+    const duration = this.getAnimationDurationMs();
+    const cleanupId = setTimeout(() => {
+      if (lowerText) lowerText.textContent = newChar;
+      if (flipper) flipper.classList.remove('flipping');
+    }, duration);
+    this.pendingTimeouts.push(cleanupId);
   }
 
   setDimensions(rows, cols) {
@@ -170,3 +203,4 @@ export class BoardComponent {
     document.documentElement.style.setProperty('--flip-speed', duration);
   }
 }
+

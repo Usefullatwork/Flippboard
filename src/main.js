@@ -18,9 +18,21 @@ class VestaboardStudioApp {
     this.intervalSeconds = 30;
     this.isPlaying = true;
     this.timerId = null;
+    this.clockTickerId = null;
 
     this.init();
     this.initSSE();
+    this.setupAudioUnlock();
+  }
+
+  setupAudioUnlock() {
+    const unlock = () => {
+      audioEngine.ensureContext();
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('keydown', unlock);
   }
 
   initSSE() {
@@ -111,6 +123,7 @@ class VestaboardStudioApp {
       onMatrixSizeChange: (rows, cols) => {
         VestaboardEngine.setMatrixDimensions(rows, cols);
         this.board.setDimensions(rows, cols);
+        if (this.quoteManager) this.quoteManager.handleMatrixResize(rows, cols);
         this.displayCurrentQuote();
       },
       onZoomChange: (scale) => {
@@ -210,6 +223,22 @@ class VestaboardStudioApp {
     this.quoteManager.renderCustomQuotes();
   }
 
+  updateClockTicker() {
+    if (this.clockTickerId) {
+      clearInterval(this.clockTickerId);
+      this.clockTickerId = null;
+    }
+    if (this.currentMode === 'clock') {
+      this.clockTickerId = setInterval(() => {
+        if (this.currentMode === 'clock') {
+          const clockMsg = VestaboardEngine.getClockMessage();
+          this.board.displayMessage(clockMsg);
+          this.updateMetaUI('Live Flip Clock', 'Vestaboard Studio', 'Clock Mode');
+        }
+      }, 1000);
+    }
+  }
+
   displayCurrentQuote() {
     if (this.currentMode === 'clock') {
       const clockMsg = VestaboardEngine.getClockMessage();
@@ -241,8 +270,8 @@ class VestaboardStudioApp {
     const categoryBadge = document.getElementById('quote-category-badge');
     const sourceLabel = document.getElementById('quote-source-label');
 
-    categoryBadge.textContent = category;
-    sourceLabel.textContent = `— ${author}`;
+    if (categoryBadge) categoryBadge.textContent = category;
+    if (sourceLabel) sourceLabel.textContent = `— ${author}`;
   }
 
   flipToNextQuote() {
@@ -258,11 +287,14 @@ class VestaboardStudioApp {
     }
 
     this.displayCurrentQuote();
+    if (this.isPlaying) this.startTimer();
   }
 
   handleModeChange(mode) {
     this.currentMode = mode;
+    this.updateClockTicker();
     this.displayCurrentQuote();
+    if (this.isPlaying) this.startTimer();
   }
 
   handlePlayPause(isPlaying) {
@@ -277,6 +309,7 @@ class VestaboardStudioApp {
   handleShuffle() {
     this.currentIndex = Math.floor(Math.random() * this.allQuotes.length);
     this.displayCurrentQuote();
+    if (this.isPlaying) this.startTimer();
   }
 
   handleIntervalChange(seconds) {
@@ -293,6 +326,7 @@ class VestaboardStudioApp {
       category: 'custom'
     };
     this.displayQuote(customQuote);
+    if (this.isPlaying) this.startTimer();
   }
 
   startTimer() {
@@ -316,3 +350,4 @@ class VestaboardStudioApp {
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new VestaboardStudioApp();
 });
+
