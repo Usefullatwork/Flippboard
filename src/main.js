@@ -136,6 +136,10 @@ class VestaboardStudioApp {
         this.settings.fillViewport = isFill;
         this.saveSettings();
         document.querySelector('.board-viewport').classList.toggle('fill-viewport', isFill);
+        // Fill-viewport owns the frame width, so the zoom slider has no
+        // effect while it is on — disable it rather than let it lie
+        const zoom = document.getElementById('board-zoom-slider');
+        if (zoom) zoom.disabled = isFill;
       }
     });
 
@@ -147,7 +151,10 @@ class VestaboardStudioApp {
     const matrixSelect = document.getElementById('matrix-size-select');
     if (matrixSelect) matrixSelect.value = `${this.settings.rows}x${this.settings.cols}`;
     const zoomSlider = document.getElementById('board-zoom-slider');
-    if (zoomSlider) zoomSlider.value = this.settings.scale;
+    if (zoomSlider) {
+      zoomSlider.value = this.settings.scale;
+      zoomSlider.disabled = this.settings.fillViewport;
+    }
     const fillCheckbox = document.getElementById('setting-fill-viewport');
     if (fillCheckbox) fillCheckbox.checked = this.settings.fillViewport;
 

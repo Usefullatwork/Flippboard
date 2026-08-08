@@ -17,6 +17,19 @@ export const COLOR_TILES = {
   '{black}': 'tile-black'
 };
 
+/**
+ * The physical character drum every flap cycles through, in flip order —
+ * like a real Vestaboard: blank, letters, digits, punctuation, color chips.
+ * Entries are cell keys: a plain char, or a tile-* class for color cells.
+ */
+export const FLAP_SEQUENCE = [
+  ' ',
+  ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  ...'0123456789',
+  ...".,'!?&@#$()+-=;:\"%/",
+  ...Object.values(COLOR_TILES)
+];
+
 export class FlippboardEngine {
   static setMatrixDimensions(rows, cols) {
     BOARD_ROWS = rows;

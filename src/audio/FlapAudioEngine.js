@@ -37,6 +37,11 @@ class FlapAudioEngine {
    */
   playFlapClick() {
     if (!this.enabled || !this.volume || this.volume <= 0) return;
+    // Global rate cap: drum-spinning a full board fires thousands of clicks;
+    // ~45 clicks/s keeps the mechanical storm audible without node overload
+    const nowMs = performance.now();
+    if (this._lastClickMs && nowMs - this._lastClickMs < 22) return;
+    this._lastClickMs = nowMs;
     this.ensureContext();
     if (!this.ctx) return;
 

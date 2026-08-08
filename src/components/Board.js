@@ -1,5 +1,14 @@
-import { BOARD_ROWS, BOARD_COLS, VestaboardEngine } from '../core/VestaboardEngine.js';
+import { BOARD_ROWS, BOARD_COLS, VestaboardEngine, FLAP_SEQUENCE } from '../core/VestaboardEngine.js';
 import { audioEngine } from '../audio/FlapAudioEngine.js';
+
+// Cell key = what a flap physically displays: a char, or a tile-* color class
+const cellKey = (cell) => (cell.isColor ? cell.colorClass : cell.char);
+const SEQ_INDEX = new Map(FLAP_SEQUENCE.map((key, i) => [key, i]));
+
+const FLIP_KEYFRAMES = [
+  { transform: 'rotateX(0deg)' },
+  { transform: 'rotateX(-180deg)' }
+];
 
 export class BoardComponent {
   constructor(screenElement) {
@@ -7,32 +16,28 @@ export class BoardComponent {
     this.currentMatrix = Array.from({ length: BOARD_ROWS }, () =>
       Array.from({ length: BOARD_COLS }, () => ({ char: ' ', isColor: false, colorClass: '' }))
     );
-    this.flapElements = []; // 6x22 (or dynamic) 2D array of DOM nodes
+    this.flapElements = []; // 2D array of DOM nodes
+    this.spinners = [];     // 2D array of per-flap drum state {displayed, target, anim}
     this.alignMode = 'center';
     this.speedMode = 'realistic';
-    this.pendingTimeouts = [];
 
     this.initDOM();
-  }
-
-  /**
-   * Clears all pending animation timeouts to prevent race conditions during rapid flips.
-   */
-  clearPendingTimeouts() {
-    this.pendingTimeouts.forEach(t => clearTimeout(t));
-    this.pendingTimeouts = [];
   }
 
   /**
    * Initializes the grid DOM elements with crisp split-flap leaf structure.
    */
   initDOM() {
-    this.clearPendingTimeouts();
+    // Cancel any in-flight spins before rebuilding (cancel does NOT fire onfinish)
+    this.spinners.flat().forEach(sp => { if (sp.anim) sp.anim.cancel(); });
+
     this.screenElement.innerHTML = '';
     this.flapElements = [];
+    this.spinners = [];
 
     for (let r = 0; r < BOARD_ROWS; r++) {
       const rowElements = [];
+      const rowSpinners = [];
       for (let c = 0; c < BOARD_COLS; c++) {
         const flap = document.createElement('div');
         flap.className = 'split-flap';
@@ -52,8 +57,10 @@ export class BoardComponent {
 
         this.screenElement.appendChild(flap);
         rowElements.push(flap);
+        rowSpinners.push({ displayed: ' ', target: ' ', anim: null });
       }
       this.flapElements.push(rowElements);
+      this.spinners.push(rowSpinners);
     }
   }
 
@@ -66,58 +73,44 @@ export class BoardComponent {
   }
 
   /**
-   * Cascading flip animation comparing current vs target matrix.
+   * Points every flap's drum at its new target character. Flaps spin
+   * independently and simultaneously (like the real machine); a flap already
+   * spinning simply keeps going until it reaches the updated target, so
+   * interrupting messages never needs cancellation or cleanup.
    */
   flipToMatrix(targetMatrix) {
-    // Clear any active/queued timeouts from previous flips
-    this.clearPendingTimeouts();
-
-    // Pre-count changed flaps and cap the total cascade at ~1.6s so giant
-    // boards (400 flaps) finish before the minimum 5s playback interval
-    let changedCount = 0;
     for (let r = 0; r < BOARD_ROWS; r++) {
       for (let c = 0; c < BOARD_COLS; c++) {
-        const cur = this.currentMatrix[r] ? this.currentMatrix[r][c] : null;
-        const tgt = targetMatrix[r][c];
-        if (cur && (cur.char !== tgt.char || cur.colorClass !== tgt.colorClass)) changedCount++;
-      }
-    }
-    const stagger = changedCount ? Math.min(12, 1600 / changedCount) : 0;
+        const sp = this.spinners[r] ? this.spinners[r][c] : null;
+        if (!sp || !targetMatrix[r] || !targetMatrix[r][c]) continue;
 
-    let delayCounter = 0;
-
-    for (let r = 0; r < BOARD_ROWS; r++) {
-      for (let c = 0; c < BOARD_COLS; c++) {
-        const flapEl = this.flapElements[r] ? this.flapElements[r][c] : null;
-        const currentCell = this.currentMatrix[r] ? this.currentMatrix[r][c] : null;
-        const targetCell = targetMatrix[r][c];
-        if (!flapEl || !currentCell) continue;
-
-        // Check if character or color tile changed
-        if (currentCell.char !== targetCell.char || currentCell.colorClass !== targetCell.colorClass) {
-          const staggerDelay = delayCounter * stagger;
-          delayCounter++;
-
-          const tId = setTimeout(() => {
-            this.animateSingleFlap(flapEl, currentCell, targetCell);
-          }, staggerDelay);
-          this.pendingTimeouts.push(tId);
-        } else {
-          // Keep static flap updated
-          this.setFlapStatic(flapEl, targetCell);
+        sp.target = cellKey(targetMatrix[r][c]);
+        if (!sp.anim && sp.displayed !== sp.target) {
+          // Small random start jitter so the wall of flaps feels mechanical,
+          // not synchronized; steps themselves chain via onfinish
+          this.spinStep(sp, this.flapElements[r][c], Math.random() * 120);
         }
       }
     }
-
     this.currentMatrix = targetMatrix;
   }
 
-  setFlapStatic(flapEl, cell) {
-    if (!flapEl) return;
-    flapEl.className = 'split-flap';
-    if (cell.isColor) {
-      flapEl.classList.add(cell.colorClass);
+  /**
+   * Advances one flap a single position on its drum, then chains the next
+   * step from the animation's onfinish until it reaches its target.
+   */
+  spinStep(sp, flapEl, delay = 0) {
+    if (sp.displayed === sp.target) {
+      sp.anim = null;
+      return;
     }
+
+    const from = sp.displayed;
+    const fromIdx = SEQ_INDEX.get(from);
+    // Chars not on the drum (imported exotic glyphs) jump directly to target
+    const next = (fromIdx === undefined || !SEQ_INDEX.has(sp.target))
+      ? sp.target
+      : FLAP_SEQUENCE[(fromIdx + 1) % FLAP_SEQUENCE.length];
 
     const upperText = flapEl.querySelector('.flap-upper .flap-text');
     const lowerText = flapEl.querySelector('.flap-lower .flap-text');
@@ -125,72 +118,44 @@ export class BoardComponent {
     const backText = flapEl.querySelector('.face-back .flap-text');
     const flipper = flapEl.querySelector('.flap-flipper');
 
-    if (flipper) flipper.classList.remove('flipping');
+    const isColor = next.startsWith('tile-');
+    flapEl.className = isColor ? `split-flap ${next}` : 'split-flap';
 
-    const charVal = cell.isColor ? '' : cell.char;
-    if (upperText) upperText.textContent = charVal;
-    if (lowerText) lowerText.textContent = charVal;
-    if (frontText) frontText.textContent = charVal;
-    if (backText) backText.textContent = charVal;
-  }
+    const fromChar = from.startsWith('tile-') ? '' : from;
+    const nextChar = isColor ? '' : next;
 
-  /**
-   * Gets animation duration in ms based on speedMode setting.
-   */
-  getAnimationDurationMs() {
-    if (this.speedMode === 'fast') return 150;
-    if (this.speedMode === 'slow') return 500;
-    return 280; // realistic default
-  }
+    // Leaf faces for this step: flipper front shows the outgoing char,
+    // upper (revealed as it falls) and flipper back show the incoming one
+    if (frontText) frontText.textContent = fromChar;
+    if (backText) backText.textContent = nextChar;
+    if (upperText) upperText.textContent = nextChar;
+    if (lowerText) lowerText.textContent = fromChar;
 
-  /**
-   * Animates a single flap cell transition.
-   */
-  animateSingleFlap(flapEl, oldCell, newCell) {
-    if (!flapEl) return;
-    const upperText = flapEl.querySelector('.flap-upper .flap-text');
-    const lowerText = flapEl.querySelector('.flap-lower .flap-text');
-    const frontText = flapEl.querySelector('.face-front .flap-text');
-    const backText = flapEl.querySelector('.face-back .flap-text');
-    const flipper = flapEl.querySelector('.flap-flipper');
-
-    // Remove old tile color classes
-    flapEl.className = 'split-flap';
-    if (newCell.isColor) {
-      flapEl.classList.add(newCell.colorClass);
-    }
-
-    const oldChar = oldCell.isColor ? '' : oldCell.char;
-    const newChar = newCell.isColor ? '' : newCell.char;
-
-    // Set leaf characters for flip transition
-    if (frontText) frontText.textContent = oldChar;
-    if (backText) backText.textContent = newChar;
-    if (upperText) upperText.textContent = newChar;
-    if (lowerText) lowerText.textContent = oldChar;
-
-    // Restart CSS flip animation
-    if (flipper) {
-      flipper.classList.remove('flipping');
-      void flipper.offsetWidth; // trigger reflow
-      flipper.classList.add('flipping');
-    }
-
-    // Trigger mechanical clack sound
+    const anim = flipper.animate(FLIP_KEYFRAMES, {
+      duration: this.stepDurationMs(),
+      delay,
+      easing: 'cubic-bezier(0.55, 0.06, 0.68, 0.5)',
+      fill: 'forwards'
+    });
+    sp.anim = anim;
     audioEngine.playFlapClick();
 
-    // After the flip animation finishes, normalize the flap to its at-rest
-    // state. The flipper stays visible at rotateX(0) covering the upper half,
-    // so the front face MUST be updated to the new char here — otherwise the
-    // flap shows the old char's top half over the new char's bottom half.
-    // +50ms buffer so the CSS animation always completes before the snap-back.
-    const duration = this.getAnimationDurationMs() + 50;
-    const cleanupId = setTimeout(() => {
-      if (lowerText) lowerText.textContent = newChar;
-      if (frontText) frontText.textContent = newChar;
-      if (flipper) flipper.classList.remove('flipping');
-    }, duration);
-    this.pendingTimeouts.push(cleanupId);
+    anim.onfinish = () => {
+      // Normalize to at-rest state: the flipper sits over the upper half at
+      // rotateX(0), so its front face must carry the settled char
+      sp.displayed = next;
+      sp.anim = null;
+      if (lowerText) lowerText.textContent = nextChar;
+      if (frontText) frontText.textContent = nextChar;
+      anim.cancel(); // release the forwards-fill so the flipper rests at 0deg
+      this.spinStep(sp, flapEl);
+    };
+  }
+
+  stepDurationMs() {
+    if (this.speedMode === 'fast') return 40;
+    if (this.speedMode === 'slow') return 110;
+    return 65; // realistic
   }
 
   setDimensions(rows, cols) {
@@ -217,10 +182,5 @@ export class BoardComponent {
 
   setSpeedMode(speed) {
     this.speedMode = speed;
-    let duration = '0.28s';
-    if (speed === 'fast') duration = '0.15s';
-    if (speed === 'slow') duration = '0.50s';
-    document.documentElement.style.setProperty('--flip-speed', duration);
   }
 }
-
