@@ -129,15 +129,280 @@ export const DEFAULT_QUOTES = [
   {
     id: "wisdom-9",
     category: "wisdom",
-    text: "WE WISH FOR THE PRIZE BUT NOT FOR THE PRICE",
+    text: "PEOPLE WISH FOR OTHER PEOPLE'S LIVES BUT NOT FOR THEIR SACRIFICES. WE WISH FOR THE PRIZE BUT NOT FOR THE PRICE",
     author: "Alex Hormozi",
     active: true
   },
   {
     id: "wisdom-10",
     category: "wisdom",
-    text: "WE FALL TO THE STANDARDS WE HAVE WHEN NO ONE IS WATCHING",
+    text: "WE DON'T RISE TO THE STANDARDS WE HAVE WHEN OTHERS ARE WATCHING; WE FALL TO THE STANDARDS WE HAVE WHEN NO ONE IS",
     author: "Alex Hormozi",
+    active: true
+  },
+  {
+    id: "wisdom-11",
+    category: "wisdom",
+    text: "YOU ARE UNDER NO OBLIGATION TO BE THE SAME PERSON YOU WERE FIVE MINUTES AGO",
+    author: "Alan Watts",
+    active: true
+  },
+  {
+    id: "wisdom-12",
+    category: "wisdom",
+    text: "ESCAPE COMPETITION THROUGH AUTHENTICITY",
+    author: "Naval Ravikant",
+    active: true
+  },
+  {
+    id: "wisdom-13",
+    category: "wisdom",
+    text: "THE OPPOSITE OF A GOOD IDEA CAN ALSO BE A GOOD IDEA",
+    author: "Rory Sutherland",
+    active: true
+  },
+  {
+    id: "wisdom-14",
+    category: "wisdom",
+    text: "A FLOWER IS SIMPLY A WEED WITH AN ADVERTISING BUDGET",
+    author: "Rory Sutherland",
+    active: true
+  },
+  {
+    id: "wisdom-15",
+    category: "wisdom",
+    text: "DARE TO BE TRIVIAL",
+    author: "Rory Sutherland",
+    active: true
+  },
+  {
+    id: "wisdom-16",
+    category: "wisdom",
+    text: "THE DEGREE TO WHICH A PERSON CAN GROW IS IN DIRECT PROPORTION TO THE AMOUNT OF TRUTH THEY CAN ACCEPT ABOUT THEMSELVES",
+    author: "Robert Anthony",
+    active: true
+  },
+  {
+    id: "wisdom-17",
+    category: "wisdom",
+    text: "IT'S BETTER TO ADMIT YOU WALKED IN THE WRONG DOOR THAN TO SPEND YOUR LIFE IN THE WRONG ROOM",
+    author: "Josh Shipp",
+    active: true
+  },
+  {
+    id: "wisdom-18",
+    category: "wisdom",
+    text: "MAKE SURE YOUR HABITS ARE BUILDING YOUR FUTURE NOT JUST MAINTAINING YOUR PAST",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "wisdom-19",
+    category: "wisdom",
+    text: "THE PERSON WHO MADE THE MAP HAD NO MAP",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "wisdom-20",
+    category: "wisdom",
+    text: "DEAL WITH THINGS AS THEY COME NOT AS YOU FEAR THEY WILL",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "wisdom-21",
+    category: "wisdom",
+    text: "SOMETIMES WE'RE SO FOCUSED ON WAITING FOR A DOOR TO OPEN THAT WE FORGET TO PUSH ON IT",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "wisdom-22",
+    category: "wisdom",
+    text: "YOU NEVER KNOW WHAT WORSE LUCK YOUR BAD LUCK HAS SAVED YOU FROM",
+    author: "Cormac McCarthy",
+    active: true
+  },
+
+  // Higher Mind — esoteric, consciousness, goal-reaching
+  {
+    id: "mind-1",
+    category: "mindset",
+    text: "WE SUFFER MORE IN IMAGINATION THAN IN REALITY",
+    author: "Seneca",
+    active: true
+  },
+  {
+    id: "mind-2",
+    category: "mindset",
+    text: "HE WHO FEARS HE SHALL SUFFER ALREADY SUFFERS WHAT HE FEARS",
+    author: "Michel de Montaigne",
+    active: true
+  },
+  {
+    id: "mind-3",
+    category: "mindset",
+    text: "THE HAPPINESS OF YOUR LIFE DEPENDS UPON THE QUALITY OF YOUR THOUGHTS",
+    author: "Marcus Aurelius",
+    active: true
+  },
+  {
+    id: "mind-4",
+    category: "mindset",
+    text: "WHAT YOU SEEK IS SEEKING YOU",
+    author: "Rumi",
+    active: true
+  },
+  {
+    id: "mind-5",
+    category: "mindset",
+    text: "WHO LOOKS OUTSIDE DREAMS\nWHO LOOKS INSIDE AWAKES",
+    author: "Carl Jung",
+    active: true
+  },
+  {
+    id: "mind-6",
+    category: "mindset",
+    text: "WHEN YOU WANT SOMETHING ALL THE UNIVERSE CONSPIRES IN HELPING YOU TO ACHIEVE IT",
+    author: "Paulo Coelho",
+    active: true
+  },
+  {
+    id: "mind-7",
+    category: "mindset",
+    text: "AS A MAN THINKETH IN HIS HEART SO IS HE",
+    author: "Proverbs 23:7",
+    active: true
+  },
+  {
+    id: "mind-8",
+    category: "mindset",
+    text: "THE BEST WAY OUT IS ALWAYS THROUGH",
+    author: "Robert Frost",
+    active: true
+  },
+  {
+    id: "mind-9",
+    category: "mindset",
+    text: "PRESSURE IS A PRIVILEGE",
+    author: "Billie Jean King",
+    active: true
+  },
+  {
+    id: "mind-10",
+    category: "mindset",
+    text: "YOUR THOUGHTS CREATE YOUR REALITY",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "mind-11",
+    category: "mindset",
+    text: "IF YOU BLIND YOURSELF FROM LIFE'S HORRORS YOU BLIND YOURSELF TO LIFE'S WONDERS",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "mind-12",
+    category: "mindset",
+    text: "EVEN HEAVEN REQUIRES DEATH",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "mind-13",
+    category: "mindset",
+    text: "YOU'D STOP TRYING TO RUSH THE RACE IF YOU REALIZED THE FINISH LINE IS SIX FEET IN THE GROUND",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "mind-14",
+    category: "mindset",
+    text: "IS YOUR GARDEN NOT GROWING BECAUSE EVERY TIME YOU GROW A FLOWER YOU CUT IT TO PROVE YOU'RE A GARDENER",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "mind-15",
+    category: "mindset",
+    text: "JUST BECAUSE ONLY 1% GET THERE DOESN'T MEAN YOU CAN'T. IT JUST MEANS YOU CAN'T BEHAVE LIKE THE 99",
+    author: "via @szatpayton",
+    active: true
+  },
+
+  // Relationships
+  {
+    id: "rel-1",
+    category: "relationships",
+    text: "THE QUALITY OF YOUR RELATIONSHIPS DETERMINES THE QUALITY OF YOUR LIFE",
+    author: "Esther Perel",
+    active: true
+  },
+  {
+    id: "rel-2",
+    category: "relationships",
+    text: "BEING DEEPLY LOVED BY SOMEONE GIVES YOU STRENGTH WHILE LOVING SOMEONE DEEPLY GIVES YOU COURAGE",
+    author: "Lao Tzu",
+    active: true
+  },
+  {
+    id: "rel-3",
+    category: "relationships",
+    text: "PEOPLE WILL FORGET WHAT YOU SAID AND WHAT YOU DID BUT NEVER HOW YOU MADE THEM FEEL",
+    author: "Maya Angelou",
+    active: true
+  },
+  {
+    id: "rel-4",
+    category: "relationships",
+    text: "I HAVE NEVER REGRETTED BEING KIND BUT I HAVE REGRETTED EVERY MOMENT THAT I WASN'T",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "rel-5",
+    category: "relationships",
+    text: "LEAVE PEOPLE BETTER THAN YOU FOUND THEM",
+    author: "Proverb",
+    active: true
+  },
+
+  // Faith & Gratitude — szatpayton's five lines to live by
+  {
+    id: "faith-1",
+    category: "faith",
+    text: "{yellow} BE A BLESSING {yellow}",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "faith-2",
+    category: "faith",
+    text: "REFUSE TO WASTE A DAY THE LORD BLESSED YOU WITH",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "faith-3",
+    category: "faith",
+    text: "EXPECT NOTHING\nAPPRECIATE EVERYTHING",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "faith-4",
+    category: "faith",
+    text: "{orange} DO IT SCARED {orange}",
+    author: "via @szatpayton",
+    active: true
+  },
+  {
+    id: "faith-5",
+    category: "faith",
+    text: "SUFFER WELL",
+    author: "via @szatpayton",
     active: true
   },
 
@@ -182,6 +447,27 @@ export const DEFAULT_QUOTES = [
     category: "founders",
     text: "THE WORLD IS A VERY MALLEABLE PLACE",
     author: "Marc Andreessen",
+    active: true
+  },
+  {
+    id: "founders-7",
+    category: "founders",
+    text: "THE OLDER I GET THE LESS I LISTEN TO WHAT PEOPLE SAY AND THE MORE I LOOK AT WHAT THEY DO",
+    author: "Andrew Carnegie",
+    active: true
+  },
+  {
+    id: "founders-8",
+    category: "founders",
+    text: "TAKE A SIMPLE IDEA AND TAKE IT SERIOUSLY",
+    author: "Charlie Munger",
+    active: true
+  },
+  {
+    id: "founders-9",
+    category: "founders",
+    text: "I ALWAYS TRIED TO TURN EVERY DISASTER INTO AN OPPORTUNITY",
+    author: "John D. Rockefeller",
     active: true
   },
 
