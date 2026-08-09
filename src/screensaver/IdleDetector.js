@@ -12,6 +12,7 @@ export class IdleDetector {
 
     this.timer = null;
     this.isIdle = false;
+    this._graceUntil = 0;
 
     this.bindEvents();
     this.resetTimer();
@@ -19,9 +20,13 @@ export class IdleDetector {
 
   bindEvents() {
     const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'pointermove'];
-    
+
     this.handleUserActivity = () => {
       if (!this.enabled) return;
+      // Entering fullscreen can synthesize a mousemove; ignore activity for a
+      // short grace window after going idle so the screensaver isn't
+      // instantly dismissed by its own entry
+      if (this.isIdle && Date.now() < this._graceUntil) return;
 
       if (this.isIdle) {
         this.isIdle = false;
@@ -45,6 +50,25 @@ export class IdleDetector {
       this.isIdle = true;
       if (this.onIdleStart) this.onIdleStart();
     }, this.idleTimeoutSeconds * 1000);
+  }
+
+  /**
+   * Marks the detector idle regardless of how the screensaver was entered
+   * (auto-timeout or the manual kiosk button), so the next real user
+   * activity exits it. All entry paths must route through this.
+   */
+  markIdle() {
+    this.isIdle = true;
+    this._graceUntil = Date.now() + 1500;
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+  }
+
+  markActive() {
+    this.isIdle = false;
+    this.resetTimer();
   }
 
   setIdleTimeout(seconds) {

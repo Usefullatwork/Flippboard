@@ -11,8 +11,50 @@ export class SettingsModalComponent {
     this.onMatrixSizeChange = options.onMatrixSizeChange;
     this.onZoomChange = options.onZoomChange;
     this.onViewportFillChange = options.onViewportFillChange;
+    this.onAudioSettingsChange = options.onAudioSettingsChange;
 
     this.bindDOM();
+  }
+
+  /**
+   * Reflects persisted settings in every control this modal owns, plus the
+   * body font class / frame class its own handlers normally apply.
+   * Called once at boot after settings are loaded.
+   */
+  syncUI(s) {
+    const setActive = (selector, dataKey, value) => {
+      document.querySelectorAll(selector).forEach(el =>
+        el.classList.toggle('active', el.dataset[dataKey] === String(value))
+      );
+    };
+    setActive('#font-segmented-control .segment-btn', 'font', s.font);
+    setActive('#backdrop-themes-grid .theme-card', 'backdrop', s.backdrop);
+    setActive('#speed-segmented-control .segment-btn', 'speed', s.speed);
+    setActive('#align-segmented-control .segment-btn', 'align', s.align);
+    this.modalEl.querySelectorAll('.theme-card[data-theme]').forEach(el =>
+      el.classList.toggle('active', el.dataset.theme === s.frameTheme)
+    );
+
+    document.body.classList.remove('font-outfit', 'font-inter', 'font-grotesk', 'font-roboto');
+    document.body.classList.add(`font-${s.font}`);
+    const frame = document.getElementById('vestaboard-frame');
+    if (frame) frame.className = `vestaboard-frame frame-${s.frameTheme}`;
+
+    const idleSelect = document.getElementById('screensaver-idle-select');
+    if (idleSelect) idleSelect.value = String(s.idleTimeout);
+    const soundCheck = document.getElementById('setting-sound-enabled');
+    if (soundCheck) soundCheck.checked = s.audioEnabled;
+    const volumeSlider = document.getElementById('setting-sound-volume');
+    if (volumeSlider) volumeSlider.value = s.audioVolume;
+
+    // Header sound button icon shares this state
+    const audioBtn = document.getElementById('btn-audio-toggle');
+    if (audioBtn) {
+      const on = audioBtn.querySelector('.sound-on');
+      const off = audioBtn.querySelector('.sound-off');
+      if (on) on.classList.toggle('hidden', !s.audioEnabled);
+      if (off) off.classList.toggle('hidden', s.audioEnabled);
+    }
   }
 
   bindDOM() {
@@ -130,10 +172,13 @@ export class SettingsModalComponent {
 
     soundCheck.addEventListener('change', (e) => {
       audioEngine.setEnabled(e.target.checked);
+      if (this.onAudioSettingsChange) this.onAudioSettingsChange({ audioEnabled: e.target.checked });
     });
 
     volumeSlider.addEventListener('input', (e) => {
-      audioEngine.setVolume(parseFloat(e.target.value));
+      const vol = parseFloat(e.target.value);
+      audioEngine.setVolume(vol);
+      if (this.onAudioSettingsChange) this.onAudioSettingsChange({ audioVolume: vol });
     });
   }
 }

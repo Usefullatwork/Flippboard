@@ -25,16 +25,19 @@
   - Insert vibrant accent tiles (`{red}`, `{orange}`, `{yellow}`, `{green}`, `{blue}`, `{violet}`, `{white}`, `{black}`).
   - Dynamic mini-board preview grid syncing with current matrix size.
 - 🔊 **Procedural Web Audio Synthesizer**: Organic multi-layer plastic slap, mid-range body resonance, and low-frequency solenoid thud with pitch/volume jitter per click.
-- 🖥️ **Desktop Screensaver & Kiosk Mode**: Fullscreen API support with mouse move & Esc key exit triggers.
+- 🖥️ **Desktop Screensaver & Kiosk Mode**: Auto-launches fullscreen after a configurable idle timeout (15s–10min, or manual-only); exits on mouse move, Esc, or the exit button.
+- 🌌 **5 Ambient Wall Backdrops**: Dark Studio, Warm Living Room, Modern Gallery, Neon Cyberpunk, and OLED Pitch Black — plus 4 frame finishes (Obsidian, Walnut, Silver, Neon).
+- 💾 **Persistent Settings**: Matrix size, zoom, fonts, themes, sound, and screensaver timing survive reloads via localStorage — set it once on your wall display.
 - 🏠 **Local Network Webhook Integration**: Push immediate priority alerts via HTTP POST JSON requests from Home Assistant, Node-RED, `curl`, or iOS Shortcuts.
+- 🔗 **Shareable Message Links**: Open `http://localhost:5173/#msg=YOUR%20MESSAGE` to flip a message straight onto the board.
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v16.0 or higher)
-- npm or yarn
+- [Node.js](https://nodejs.org/) (v18.0 or higher — required by Express 5)
+- npm
 
 ### Installation
 
@@ -49,17 +52,22 @@
    npm install
    ```
 
-3. **Start the development server:**
+3. **Run it (production, one command):**
    ```bash
-   npm run dev
+   npm start
    ```
-   *Runs Vite frontend at `http://localhost:5173`.*
+   *Builds the app and serves it with the webhook backend at `http://localhost:5000`.*
 
-4. **Start the local Webhook Server (Optional for network notifications):**
-   ```bash
-   npm run server
-   ```
-   *Runs Express backend at `http://localhost:5000`.*
+### Development
+
+```bash
+npm run dev      # Vite dev server with hot reload at http://localhost:5173
+npm run server   # Express webhook/SSE backend at http://localhost:5000 (run alongside dev)
+npm test         # Vitest suite: engine, board spinner, settings persistence
+```
+
+> `npm run server` alone serves whatever is in `dist/` — run `npm run build` first
+> (or just use `npm start`, which always builds fresh).
 
 ---
 
@@ -84,6 +92,11 @@ rest_command:
     content_type: 'application/json'
 ```
 
+**Security notes (LAN posture):**
+- The payload must be `{"text": "..."}` with 1–500 characters; anything else is rejected with `400`.
+- The endpoint has no authentication by default and CORS is open — intended for trusted home networks only. To require a shared secret, start the server with `WEBHOOK_TOKEN=yoursecret` and send an `x-webhook-token` header with every request.
+- The page connects to the SSE stream on port 5000 of *the host that served it* — webhooks only work when the page and the Express server run on the same machine.
+
 ---
 
 ## 🏗️ Building for Production
@@ -92,7 +105,7 @@ To create an optimized production bundle:
 ```bash
 npm run build
 ```
-Output files will be generated in the `dist/` directory, ready to be deployed to Vercel, Netlify, Cloudflare Pages, or GitHub Pages.
+Output files land in `dist/`. The board, quotes, clock, and screensaver are fully static and can be deployed to Vercel, Netlify, Cloudflare Pages, or GitHub Pages — **but the webhook/SSE integration requires the Node server**, so on static hosts that feature is disabled. For the full experience on a wall display, use `npm start` on a machine on your LAN.
 
 ---
 
