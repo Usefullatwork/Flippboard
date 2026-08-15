@@ -63,8 +63,9 @@ export class FlippboardEngine {
 
   /**
    * Word-wraps raw text into lines of max 22 flap tokens each.
+   * Pass { truncate: false } to get the untruncated line count (validation).
    */
-  static wrapTextToLines(rawText) {
+  static wrapTextToLines(rawText, { truncate = true } = {}) {
     const paragraphLines = rawText.split('\n');
     const finalLines = [];
 
@@ -119,7 +120,34 @@ export class FlippboardEngine {
       }
     }
 
-    return finalLines.slice(0, BOARD_ROWS);
+    return truncate ? finalLines.slice(0, BOARD_ROWS) : finalLines;
+  }
+
+  /**
+   * Validates a quote against the current board: overflow, off-drum chars, duplicates.
+   * Returns { ok, overflowRows, invalidChars, duplicateOf }.
+   */
+  static validateQuote(text, existingQuotes = []) {
+    const lines = this.wrapTextToLines(text, { truncate: false });
+    const overflowRows = Math.max(0, lines.length - BOARD_ROWS);
+    const invalidChars = [...new Set(
+      lines.flat()
+        .filter(tok => tok.type === 'char' && !FLAP_SEQUENCE.includes(tok.val))
+        .map(tok => tok.val)
+    )];
+    const normalize = (s) => s
+      .replace(/\{(red|orange|yellow|green|blue|violet|white|black)\}/gi, '')
+      .toUpperCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+    const norm = normalize(text);
+    const dup = norm ? existingQuotes.find(q => normalize(q.text || '') === norm) : null;
+    return {
+      ok: overflowRows === 0 && invalidChars.length === 0 && !dup,
+      overflowRows,
+      invalidChars,
+      duplicateOf: dup ? dup.id : null
+    };
   }
 
   /**

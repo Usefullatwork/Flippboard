@@ -84,6 +84,7 @@ export class QuoteManagerComponent {
       const counterEl = document.getElementById('char-counter');
       if (counterEl) counterEl.textContent = val.length;
       this.updateMiniBoardPreview(miniBoard, val);
+      this.showValidation(val);
     };
 
     composeText.addEventListener('input', updatePreview);
@@ -106,6 +107,20 @@ export class QuoteManagerComponent {
       const category = document.getElementById('compose-category').value;
 
       if (text) {
+        const check = this.validateAgainstLibrary(text);
+        if (check.invalidChars.length > 0) {
+          alert(`These characters don't exist on the flap drum and can't be displayed: ${check.invalidChars.join(' ')}\n\nRemove them and try again.`);
+          return;
+        }
+        if (check.overflowRows > 0 &&
+            !confirm(`This message is ${check.overflowRows} line(s) too long for the board — the end will be cut off. Save anyway?`)) {
+          return;
+        }
+        if (check.duplicateOf && check.duplicateOf !== this.editingQuoteId &&
+            !confirm('An identical quote already exists in the library. Save anyway?')) {
+          return;
+        }
+
         const quoteObj = {
           id: this.editingQuoteId || `custom-${Date.now()}`,
           category,
@@ -154,10 +169,24 @@ export class QuoteManagerComponent {
       reader.onload = (event) => {
         try {
           const imported = JSON.parse(event.target.result);
-          if (Array.isArray(imported) && this.onExportImport) {
-            this.onExportImport(imported);
-            alert(`Successfully imported ${imported.length} custom quotes!`);
+          if (!Array.isArray(imported)) {
+            alert('Invalid file: expected a JSON array of quotes.');
+            return;
           }
+          const valid = [];
+          let skipped = 0;
+          for (const item of imported) {
+            const shapeOk = item && typeof item.text === 'string' && item.text.trim();
+            if (shapeOk && this.validateAgainstLibrary(item.text).invalidChars.length === 0) {
+              valid.push(item);
+            } else {
+              skipped++;
+            }
+          }
+          if (valid.length && this.onExportImport) this.onExportImport(valid);
+          alert(skipped
+            ? `Imported ${valid.length} quotes. Skipped ${skipped} (missing text or characters not on the flap drum).`
+            : `Successfully imported ${valid.length} custom quotes!`);
         } catch (err) {
           alert('Invalid JSON file format.');
         }
@@ -166,6 +195,26 @@ export class QuoteManagerComponent {
     });
 
     this.renderCuratedQuotes();
+  }
+
+  validateAgainstLibrary(text) {
+    return VestaboardEngine.validateQuote(text, [...this.curatedQuotes, ...this.customQuotes]);
+  }
+
+  showValidation(text) {
+    const el = document.getElementById('compose-validation');
+    if (!el) return;
+    if (!text.trim()) {
+      el.classList.add('hidden');
+      return;
+    }
+    const check = this.validateAgainstLibrary(text);
+    const warnings = [];
+    if (check.invalidChars.length > 0) warnings.push(`not on flap drum: ${check.invalidChars.join(' ')}`);
+    if (check.overflowRows > 0) warnings.push(`${check.overflowRows} line(s) too long — end will be cut off`);
+    if (check.duplicateOf && check.duplicateOf !== this.editingQuoteId) warnings.push('duplicate of an existing quote');
+    el.textContent = warnings.length ? `⚠ ${warnings.join(' · ')}` : '';
+    el.classList.toggle('hidden', warnings.length === 0);
   }
 
   handleMatrixResize(rows, cols) {

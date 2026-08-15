@@ -1066,6 +1066,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
   text-align: right;
 }
 
+.compose-validation {
+  font-size: 0.75rem;
+  color: #e6a23c;
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
 .color-tile-palette {
   display: flex;
   gap: 0.5rem;

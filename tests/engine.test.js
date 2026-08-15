@@ -124,6 +124,45 @@ describe('getDailyQuote', () => {
   });
 });
 
+describe('validateQuote', () => {
+  it('passes a clean fitting quote', () => {
+    const res = FlippboardEngine.validateQuote('HELLO WORLD');
+    expect(res).toEqual({ ok: true, overflowRows: 0, invalidChars: [], duplicateOf: null });
+  });
+
+  it('reports overflow rows instead of silently truncating', () => {
+    const res = FlippboardEngine.validateQuote(Array(9).fill('ROW').join('\n'));
+    expect(res.ok).toBe(false);
+    expect(res.overflowRows).toBe(3);
+  });
+
+  it('flags characters missing from the flap drum', () => {
+    const res = FlippboardEngine.validateQuote('CAFÉ — YES');
+    expect(res.ok).toBe(false);
+    expect(res.invalidChars).toContain('É');
+    expect(res.invalidChars).toContain('—');
+  });
+
+  it('exempts color tile tokens from the char check', () => {
+    const res = FlippboardEngine.validateQuote('{red}{blue} OK');
+    expect(res.invalidChars).toEqual([]);
+    expect(res.ok).toBe(true);
+  });
+
+  it('detects duplicates case/whitespace/tile-insensitively', () => {
+    const existing = [{ id: 'q1', text: 'Stay  Hungry\nstay foolish' }];
+    const res = FlippboardEngine.validateQuote('{green}STAY HUNGRY STAY FOOLISH', existing);
+    expect(res.ok).toBe(false);
+    expect(res.duplicateOf).toBe('q1');
+  });
+
+  it('respects reduced board dimensions', () => {
+    FlippboardEngine.setMatrixDimensions(4, 15);
+    const res = FlippboardEngine.validateQuote(Array(6).fill('ROW').join('\n'));
+    expect(res.overflowRows).toBe(2);
+  });
+});
+
 describe('FLAP_SEQUENCE drum', () => {
   it('has unique entries starting with blank', () => {
     expect(FLAP_SEQUENCE[0]).toBe(' ');
