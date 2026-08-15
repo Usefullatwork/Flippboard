@@ -2,6 +2,7 @@ export class ControlsComponent {
   constructor(options) {
     this.onModeChange = options.onModeChange;
     this.onNextClick = options.onNextClick;
+    this.onPrevClick = options.onPrevClick;
     this.onPlayPauseToggle = options.onPlayPauseToggle;
     this.onShuffleClick = options.onShuffleClick;
     this.onIntervalChange = options.onIntervalChange;
@@ -107,6 +108,35 @@ export class ControlsComponent {
         document.body.classList.remove('kiosk-mode');
         exitKioskBtn.classList.add('hidden');
         if (this.onKioskToggle) this.onKioskToggle(false);
+        return;
+      }
+
+      // Hotkeys — skip while typing or while a modal is open
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.target.closest && e.target.closest('input, textarea, select')) return;
+      if (document.querySelector('.modal-overlay:not(.hidden)')) return;
+
+      switch (e.key) {
+        case ' ':
+          e.preventDefault(); // don't scroll / re-trigger focused button
+          playPauseBtn.click();
+          break;
+        case 'ArrowRight':
+        case 'n':
+        case 'N':
+          document.getElementById('btn-next-quote').click();
+          break;
+        case 'ArrowLeft':
+          if (this.onPrevClick) this.onPrevClick();
+          break;
+        case 's':
+        case 'S':
+          document.getElementById('btn-shuffle').click();
+          break;
+        case 'f':
+        case 'F':
+          (document.body.classList.contains('kiosk-mode') ? exitKioskBtn : kioskBtn).click();
+          break;
       }
     });
   }

@@ -101,6 +101,7 @@ class VestaboardStudioApp {
     this.controls = new ControlsComponent({
       onModeChange: (mode) => this.handleModeChange(mode),
       onNextClick: () => this.flipToNextQuote(),
+      onPrevClick: () => this.flipToPrevQuote(),
       onPlayPauseToggle: (isPlaying) => this.handlePlayPause(isPlaying),
       onShuffleClick: () => this.handleShuffle(),
       onIntervalChange: (sec) => this.handleIntervalChange(sec),
@@ -342,6 +343,22 @@ class VestaboardStudioApp {
       this.currentIndex = Math.floor(Math.random() * this.allQuotes.length);
     } else {
       this.currentIndex = (this.currentIndex + 1) % this.allQuotes.length;
+    }
+
+    this.displayCurrentQuote();
+    if (this.isPlaying) this.startTimer();
+  }
+
+  flipToPrevQuote() {
+    if (this.currentMode === 'clock') {
+      this.displayCurrentQuote();
+      return;
+    }
+
+    if (this.currentMode === 'random') {
+      this.currentIndex = Math.floor(Math.random() * this.allQuotes.length);
+    } else {
+      this.currentIndex = (this.currentIndex - 1 + this.allQuotes.length) % this.allQuotes.length;
     }
 
     this.displayCurrentQuote();
