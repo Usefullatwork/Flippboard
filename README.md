@@ -7,6 +7,7 @@
 [![JavaScript](https://img.shields.io/badge/Vanilla_JS-ES6+-F7DF1E?style=flat-square&logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-3D_Transforms_&_Container_Queries-1572B6?style=flat-square&logo=css3)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 [![Download](https://img.shields.io/github/v/release/Usefullatwork/Flippboard?style=flat-square&label=Download&color=f4b41a)](https://github.com/Usefullatwork/Flippboard/releases/latest)
+[![CI](https://github.com/Usefullatwork/Flippboard/actions/workflows/ci.yml/badge.svg)](https://github.com/Usefullatwork/Flippboard/actions/workflows/ci.yml)
 
 ![Flippboard split-flap animation](docs/media/flip.gif)
 
@@ -19,8 +20,8 @@ No Node.js, no terminal — grab a ready-to-run build from
 
 | File | What it does |
 |------|--------------|
-| `Flippboard Setup 1.1.0.exe` | One-click installer. Double-click → installs → opens straight into the board fullscreen. Adds a desktop shortcut. |
-| `Flippboard 1.1.0.exe` | Portable — no install, just run it. |
+| `Flippboard Setup <version>.exe` | One-click installer. Double-click → installs → opens straight into the board fullscreen. Adds a desktop shortcut. |
+| `Flippboard <version>.exe` | Portable — no install, just run it. |
 
 First launch: Windows Defender may ask to allow network access — that's the
 local webhook server (see below); allow it on private networks, or press
