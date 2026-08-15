@@ -6,6 +6,28 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![JavaScript](https://img.shields.io/badge/Vanilla_JS-ES6+-F7DF1E?style=flat-square&logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-3D_Transforms_&_Container_Queries-1572B6?style=flat-square&logo=css3)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![Download](https://img.shields.io/github/v/release/Usefullatwork/Flippboard?style=flat-square&label=Download&color=f4b41a)](https://github.com/Usefullatwork/Flippboard/releases/latest)
+
+![Flippboard split-flap animation](docs/media/flip.gif)
+
+---
+
+## 📥 Download & Install (Windows)
+
+No Node.js, no terminal — grab a ready-to-run build from
+**[Releases](https://github.com/Usefullatwork/Flippboard/releases/latest)**:
+
+| File | What it does |
+|------|--------------|
+| `Flippboard Setup 1.0.0.exe` | One-click installer. Double-click → installs → opens straight into the board fullscreen. Adds a desktop shortcut. |
+| `Flippboard 1.0.0.exe` | Portable — no install, just run it. |
+
+First launch: Windows Defender may ask to allow network access — that's the
+local webhook server (see below); allow it on private networks, or press
+Cancel and everything except webhooks still works. Settings and custom
+quotes persist in `%APPDATA%\Flippboard`.
+
+![Flippboard Studio](docs/media/studio.png)
 
 ---
 
@@ -28,12 +50,30 @@
 - 🖥️ **Desktop Screensaver & Kiosk Mode**: Auto-launches fullscreen after a configurable idle timeout (15s–10min, or manual-only); exits on mouse move, Esc, or the exit button.
 - 🌌 **5 Ambient Wall Backdrops**: Dark Studio, Warm Living Room, Modern Gallery, Neon Cyberpunk, and OLED Pitch Black — plus 4 frame finishes (Obsidian, Walnut, Silver, Neon).
 - 💾 **Persistent Settings**: Matrix size, zoom, fonts, themes, sound, and screensaver timing survive reloads via localStorage — set it once on your wall display.
+- ✅ **Quote Validation**: The composer warns live when a message won't fit the board, uses characters that don't exist on the flap drum, or duplicates an existing quote — imports are checked too.
 - 🏠 **Local Network Webhook Integration**: Push immediate priority alerts via HTTP POST JSON requests from Home Assistant, Node-RED, `curl`, or iOS Shortcuts.
 - 🔗 **Shareable Message Links**: Open `http://localhost:5173/#msg=YOUR%20MESSAGE` to flip a message straight onto the board.
 
 ---
 
-## 🚀 Quick Start
+## ⚙️ Settings & Quote Manager
+
+Everything lives in the two modals — flap font, matrix size (6×22 up to
+10×40), zoom, backdrops, screensaver idle timer, and the webhook receiver
+info in **Settings**; curated collections, your saved messages, and the
+composer with live board preview + validation in **Quote Library**.
+
+| Settings | Compose with live validation |
+|----------|------------------------------|
+| ![Settings modal](docs/media/settings.png) | ![Quote composer](docs/media/compose.png) |
+
+Fullscreen screensaver / kiosk mode (auto-launches after idle, `F` to toggle):
+
+![Kiosk mode](docs/media/kiosk.png)
+
+---
+
+## 🚀 Quick Start (from source)
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (v18.0 or higher — required by Express 5)
@@ -43,7 +83,7 @@
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/Flippboard.git
+   git clone https://github.com/Usefullatwork/Flippboard.git
    cd Flippboard
    ```
 
@@ -64,6 +104,8 @@
 npm run dev      # Vite dev server with hot reload at http://localhost:5173
 npm run server   # Express webhook/SSE backend at http://localhost:5000 (run alongside dev)
 npm test         # Vitest suite: engine, board spinner, settings persistence
+npm run electron # Build and open the desktop app (Electron)
+npm run dist     # Build Windows installer + portable exe into release/
 ```
 
 > `npm run server` alone serves whatever is in `dist/` — run `npm run build` first
@@ -111,9 +153,18 @@ Output files land in `dist/`. The board, quotes, clock, and screensaver are full
 
 ## 🎹 Keyboard & Mouse Shortcuts
 
-- **Esc**: Exit Screensaver / Fullscreen mode
-- **Enter**: Send Quick Message (in control dock input)
-- **Click**: Unlock Web Audio context & interact with control dock buttons
+| Key | Action |
+|-----|--------|
+| `Space` | Play / pause auto-flip |
+| `N` or `→` | Next quote |
+| `←` | Previous quote |
+| `S` | Shuffle (random quote) |
+| `F` | Toggle fullscreen screensaver / kiosk mode |
+| `Esc` | Exit screensaver / fullscreen |
+| `Enter` | Send Quick Message (in control dock input) |
+| Click | Unlock Web Audio context & interact with controls |
+
+Hotkeys are disabled while typing in an input or while a modal is open.
 
 ---
 

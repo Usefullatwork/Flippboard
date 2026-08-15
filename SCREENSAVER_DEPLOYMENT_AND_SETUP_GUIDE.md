@@ -7,7 +7,7 @@ Transform any computer, monitor, tablet, or smart TV into a physical split-flap 
 ## 🖥️ How to Run on Any Screen or TV
 
 ### Method 1: Web-Based Auto Screensaver (Zero Installation)
-1. Open the running app at `http://localhost:3000` (or host it on a local web server / Raspberry Pi).
+1. Open the running app at `http://localhost:5000` (or host it on a local web server / Raspberry Pi).
 2. Go to **Settings** (`⚙️`) and configure your **Auto-Launch Timeout** (e.g. 60 seconds).
 3. Select your preferred **Wall Backdrop & Room Lighting** (Dark Studio, Warm Lamp, Gallery Slate, Neon Glow, or Pitch Black).
 4. Leave the browser tab open. Whenever you stop moving your mouse/keyboard, Vestaboard automatically enters full-screen ambient screensaver mode!
@@ -20,7 +20,7 @@ To set this up as a true native Windows screensaver (triggers when PC is locked 
 
 1. **Option A: WebScreenSaver Wrapper**
    - Download the free open-source **WebScreenSaver** utility (or **HTML Screensaver** for Windows).
-   - Point the Screensaver URL to `http://localhost:3000` (or `file:///C:/Users/MadsF/Desktop/Flippboard/dist/index.html`).
+   - Point the Screensaver URL to `http://localhost:5000` (or `file:///C:/Users/MadsF/Desktop/Flippboard/dist/index.html`).
    - Right-click `.scr` file -> **Install** -> Select as your default Windows screensaver!
 
 2. **Option B: Standalone Electron Executable App**
