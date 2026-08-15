@@ -517,6 +517,62 @@ export const DEFAULT_QUOTES = [
     active: true
   },
 
+  // 2026-08 library expansion
+  { id: "insp-10", category: "inspirational", text: "WHAT YOU DO TODAY CAN IMPROVE ALL YOUR TOMORROWS", author: "Ralph Marston", active: true },
+  { id: "insp-11", category: "inspirational", text: "IT ALWAYS SEEMS IMPOSSIBLE UNTIL IT IS DONE", author: "Nelson Mandela", active: true },
+  { id: "insp-12", category: "inspirational", text: "ACTION IS THE FOUNDATIONAL KEY TO ALL SUCCESS", author: "Pablo Picasso", active: true },
+  { id: "insp-13", category: "inspirational", text: "EVERYTHING YOU CAN IMAGINE IS REAL", author: "Pablo Picasso", active: true },
+  { id: "insp-14", category: "inspirational", text: "THE SECRET OF GETTING AHEAD IS GETTING STARTED", author: "Mark Twain", active: true },
+  { id: "insp-15", category: "inspirational", text: "LIGHT TOMORROW WITH TODAY", author: "Elizabeth Barrett Browning", active: true },
+  { id: "insp-16", category: "inspirational", text: "FALL SEVEN TIMES STAND UP EIGHT", author: "Japanese Proverb", active: true },
+  { id: "insp-17", category: "inspirational", text: "EITHER YOU RUN THE DAY OR THE DAY RUNS YOU", author: "Jim Rohn", active: true },
+
+  { id: "wisdom-23", category: "wisdom", text: "KNOWING YOURSELF IS THE BEGINNING OF ALL WISDOM", author: "Aristotle", active: true },
+  { id: "wisdom-24", category: "wisdom", text: "THE ONLY TRUE WISDOM IS IN KNOWING YOU KNOW NOTHING", author: "Socrates", active: true },
+  { id: "wisdom-25", category: "wisdom", text: "NO MAN EVER STEPS IN THE SAME RIVER TWICE", author: "Heraclitus", active: true },
+  { id: "wisdom-26", category: "wisdom", text: "A SMOOTH SEA NEVER MADE A SKILLED SAILOR", author: "Franklin D. Roosevelt", active: true },
+  { id: "wisdom-27", category: "wisdom", text: "TURN YOUR WOUNDS INTO WISDOM", author: "Oprah Winfrey", active: true },
+  { id: "wisdom-28", category: "wisdom", text: "THE OBSTACLE IS THE WAY", author: "Marcus Aurelius", active: true },
+  { id: "wisdom-29", category: "wisdom", text: "STILL WATERS RUN DEEP", author: "Proverb", active: true },
+  { id: "wisdom-30", category: "wisdom", text: "WHEN THE ROOT IS DEEP THERE IS NO REASON TO FEAR THE WIND", author: "Proverb", active: true },
+
+  { id: "mind-16", category: "mindset", text: "WHETHER YOU THINK YOU CAN OR YOU CAN'T YOU'RE RIGHT", author: "Henry Ford", active: true },
+  { id: "mind-17", category: "mindset", text: "WE SUFFER MORE OFTEN IN IMAGINATION THAN IN REALITY", author: "Seneca", active: true },
+  { id: "mind-18", category: "mindset", text: "HE WHO HAS A WHY TO LIVE CAN BEAR ALMOST ANY HOW", author: "Friedrich Nietzsche", active: true },
+  { id: "mind-19", category: "mindset", text: "ENERGY FLOWS WHERE ATTENTION GOES", author: "Tony Robbins", active: true },
+  { id: "mind-20", category: "mindset", text: "COMPARISON IS THE THIEF OF JOY", author: "Theodore Roosevelt", active: true },
+  { id: "mind-21", category: "mindset", text: "WHAT WE THINK WE BECOME", author: "Buddha", active: true },
+  { id: "mind-22", category: "mindset", text: "HARD CHOICES EASY LIFE EASY CHOICES HARD LIFE", author: "Jerzy Gregorek", active: true },
+  { id: "mind-23", category: "mindset", text: "INSPIRATION EXISTS BUT IT HAS TO FIND YOU WORKING", author: "Pablo Picasso", active: true },
+
+  { id: "founders-10", category: "founders", text: "DONE IS BETTER THAN PERFECT", author: "Sheryl Sandberg", active: true },
+  { id: "founders-11", category: "founders", text: "IDEAS ARE EASY EXECUTION IS EVERYTHING", author: "John Doerr", active: true },
+  { id: "founders-12", category: "founders", text: "MAKE SOMETHING PEOPLE WANT", author: "Paul Graham", active: true },
+  { id: "founders-13", category: "founders", text: "IF YOU ARE NOT EMBARRASSED BY YOUR FIRST PRODUCT YOU LAUNCHED TOO LATE", author: "Reid Hoffman", active: true },
+  { id: "founders-14", category: "founders", text: "THE BEST WAY TO PREDICT THE FUTURE IS TO INVENT IT", author: "Alan Kay", active: true },
+  { id: "founders-15", category: "founders", text: "FAIL FAST LEARN FASTER", author: "Startup Maxim", active: true },
+
+  { id: "tech-5", category: "tech", text: "TECHNOLOGY IS BEST WHEN IT BRINGS PEOPLE TOGETHER", author: "Matt Mullenweg", active: true },
+  { id: "tech-6", category: "tech", text: "TALK IS CHEAP SHOW ME THE CODE", author: "Linus Torvalds", active: true },
+  { id: "tech-7", category: "tech", text: "FIRST SOLVE THE PROBLEM THEN WRITE THE CODE", author: "John Johnson", active: true },
+  { id: "tech-8", category: "tech", text: "SOFTWARE IS EATING THE WORLD", author: "Marc Andreessen", active: true },
+  { id: "tech-9", category: "tech", text: "THE COMPUTER IS A BICYCLE FOR THE MIND", author: "Steve Jobs", active: true },
+
+  { id: "rel-6", category: "relationships", text: "A FRIEND IS ONE SOUL IN TWO BODIES", author: "Aristotle", active: true },
+  { id: "rel-7", category: "relationships", text: "WE RISE BY LIFTING OTHERS", author: "Robert Ingersoll", active: true },
+  { id: "rel-8", category: "relationships", text: "KIND WORDS ARE SHORT TO SPEAK BUT THEIR ECHOES ARE ENDLESS", author: "Mother Teresa", active: true },
+  { id: "rel-9", category: "relationships", text: "ALONE WE CAN DO SO LITTLE TOGETHER WE CAN DO SO MUCH", author: "Helen Keller", active: true },
+
+  { id: "family-3", category: "family", text: "FAMILY IS NOT AN IMPORTANT THING IT'S EVERYTHING", author: "Michael J. Fox", active: true },
+  { id: "family-4", category: "family", text: "HOME IS WHERE YOUR STORY BEGINS", author: "Annie Danielson", active: true },
+  { id: "family-5", category: "family", text: "THE LOVE OF A FAMILY IS LIFE'S GREATEST BLESSING", author: "Proverb", active: true },
+  { id: "family-6", category: "family", text: "IN FAMILY LIFE LOVE IS THE OIL THAT EASES FRICTION", author: "Eva Burrows", active: true },
+
+  { id: "faith-6", category: "faith", text: "BE STILL AND KNOW", author: "Psalm 46:10", active: true },
+  { id: "faith-7", category: "faith", text: "LET YOUR FAITH BE BIGGER THAN YOUR FEAR", author: "Proverb", active: true },
+  { id: "faith-8", category: "faith", text: "GRATITUDE TURNS WHAT WE HAVE INTO ENOUGH", author: "Anonymous", active: true },
+  { id: "faith-9", category: "faith", text: "FAITH IS TAKING THE FIRST STEP EVEN WHEN YOU DON'T SEE THE WHOLE STAIRCASE", author: "Martin Luther King Jr.", active: true },
+
   // Color Flags & Art Presets
   {
     id: "art-1",
