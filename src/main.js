@@ -100,8 +100,9 @@ class VestaboardStudioApp {
     // 4. Mount Controls
     this.controls = new ControlsComponent({
       onModeChange: (mode) => this.handleModeChange(mode),
-      onNextClick: () => this.flipToNextQuote(),
+      onNextClick: () => this.flipToNextQuote(true),
       onPrevClick: () => this.flipToPrevQuote(),
+      onCategoryClick: () => this.flipToNextCategory(),
       onPlayPauseToggle: (isPlaying) => this.handlePlayPause(isPlaying),
       onShuffleClick: () => this.handleShuffle(),
       onIntervalChange: (sec) => this.handleIntervalChange(sec),
@@ -333,7 +334,17 @@ class VestaboardStudioApp {
     if (sourceLabel) sourceLabel.textContent = `— ${author}`;
   }
 
-  flipToNextQuote() {
+  // Manual navigation shows the indexed quote even in daily mode (the timer
+  // keeps re-displaying the daily quote — see displayCurrentQuote)
+  displayIndexedQuote() {
+    if (this.currentMode === 'daily' && this.allQuotes.length > 0) {
+      this.displayQuote(this.allQuotes[this.currentIndex]);
+    } else {
+      this.displayCurrentQuote();
+    }
+  }
+
+  flipToNextQuote(manual = false) {
     if (this.currentMode === 'clock') {
       this.displayCurrentQuote();
       return;
@@ -345,7 +356,8 @@ class VestaboardStudioApp {
       this.currentIndex = (this.currentIndex + 1) % this.allQuotes.length;
     }
 
-    this.displayCurrentQuote();
+    if (manual) this.displayIndexedQuote();
+    else this.displayCurrentQuote();
     if (this.isPlaying) this.startTimer();
   }
 
@@ -361,7 +373,18 @@ class VestaboardStudioApp {
       this.currentIndex = (this.currentIndex - 1 + this.allQuotes.length) % this.allQuotes.length;
     }
 
-    this.displayCurrentQuote();
+    this.displayIndexedQuote();
+    if (this.isPlaying) this.startTimer();
+  }
+
+  flipToNextCategory() {
+    if (this.currentMode === 'clock') {
+      this.displayCurrentQuote();
+      return;
+    }
+
+    this.currentIndex = VestaboardEngine.getNextCategoryIndex(this.allQuotes, this.currentIndex);
+    this.displayIndexedQuote();
     if (this.isPlaying) this.startTimer();
   }
 
@@ -383,7 +406,7 @@ class VestaboardStudioApp {
 
   handleShuffle() {
     this.currentIndex = Math.floor(Math.random() * this.allQuotes.length);
-    this.displayCurrentQuote();
+    this.displayIndexedQuote();
     if (this.isPlaying) this.startTimer();
   }
 

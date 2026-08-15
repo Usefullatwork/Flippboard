@@ -65,12 +65,6 @@
           <span id="quote-category-badge" class="category-pill">Inspirational</span>
           <span id="quote-source-label" class="source-label">— Marcus Aurelius</span>
         </div>
-        <div class="quick-flip">
-          <button id="btn-next-quote" class="btn btn-small btn-secondary" title="Flip to Next Quote (N or &#8594;)">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            <span>Flip Now</span>
-          </button>
-        </div>
       </div>
 
       <!-- Flippboard Physical Frame & Split-Flap Matrix -->
@@ -88,7 +82,7 @@
       </div>
 
       <!-- Kiosk Exit Floating Button (only visible in Kiosk / Screensaver mode) -->
-      <button id="btn-exit-kiosk" class="btn btn-floating hidden" title="Exit Screensaver Mode (Move Mouse or Esc)">
+      <button id="btn-exit-kiosk" class="btn btn-floating hidden" title="Exit Screensaver Mode (Click or Esc)">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
         <span>Exit Screensaver</span>
       </button>
@@ -111,12 +105,16 @@
           <div class="control-group">
             <label class="control-label">Timer Control</label>
             <div class="button-group">
-              <button id="btn-play-pause" class="btn btn-secondary icon-btn-wide active" title="Play/Pause Auto-Flip (Space)">
+              <button id="btn-play-pause" class="btn btn-secondary icon-btn-wide active" title="Play/Pause Auto-Flip (Space / S)">
                 <svg class="icon icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
                 <svg class="icon icon-play hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 <span id="play-pause-text">Auto-Flip Active</span>
               </button>
-              <button id="btn-shuffle" class="btn btn-secondary icon-btn" title="Shuffle Playlist (S)">
+              <button id="btn-next-quote" class="btn btn-secondary icon-btn-wide" title="Flip to Next Quote (D / N / &#8594;)">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <span>Flip Now</span>
+              </button>
+              <button id="btn-shuffle" class="btn btn-secondary icon-btn" title="Shuffle Playlist">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
               </button>
             </div>
@@ -136,7 +134,7 @@
             <label class="control-label" for="quick-message-input">Quick Board Message</label>
             <div class="input-with-button">
               <input type="text" id="quick-message-input" placeholder="Type custom message to flip instantly..." maxlength="132" autocomplete="off">
-              <button id="btn-send-quick" class="btn btn-accent">Flip Now</button>
+              <button id="btn-send-quick" class="btn btn-accent" title="Flip this message onto the board">Send</button>
             </div>
           </div>
         </div>
@@ -173,7 +171,7 @@
                 <button class="chip" data-category="mindset">Higher Mind</button>
                 <button class="chip" data-category="relationships">Relationships</button>
                 <button class="chip" data-category="faith">Faith & Gratitude</button>
-                <button class="chip" data-category="humor">Wit & Humor</button>
+                <button class="chip" data-category="family">Family & Home</button>
                 <button class="chip" data-category="patterns">Color Flags & Art</button>
               </div>
               <input type="text" id="search-quotes-input" placeholder="Search quotes..." class="search-input">
@@ -232,7 +230,7 @@
                     <option value="mindset">Higher Mind</option>
                     <option value="relationships">Relationships</option>
                     <option value="faith">Faith & Gratitude</option>
-                    <option value="humor">Wit & Humor</option>
+                    <option value="family">Family & Home</option>
                   </select>
                 </div>
               </div>
@@ -288,10 +286,13 @@
             <div class="setting-row">
               <label for="matrix-size-select">Matrix Size Preset</label>
               <select id="matrix-size-select" class="search-input">
-                <option value="6x22" selected>Standard (6x22 - 132 Flaps)</option>
                 <option value="4x15">Compact (4x15 - 60 Flaps)</option>
+                <option value="6x22" selected>Standard (6x22 - 132 Flaps)</option>
+                <option value="6x30">Wide (6x30 - 180 Flaps)</option>
+                <option value="8x22">Tall (8x22 - 176 Flaps)</option>
                 <option value="8x30">Widescreen (8x30 - 240 Flaps)</option>
                 <option value="10x40">Giant Wall (10x40 - 400 Flaps)</option>
+                <option value="12x48">Mega Wall (12x48 - 576 Flaps)</option>
               </select>
             </div>
             <div class="setting-row">
@@ -320,7 +321,7 @@
           <!-- Screensaver Idle Timer -->
           <div class="settings-group">
             <h3>Automatic Desktop Screensaver Timer</h3>
-            <p class="tagline">Automatically enters full-screen Flippboard mode when user is idle.</p>
+            <p class="tagline">Automatically enters full-screen Flippboard mode when the user is idle.</p>
             <div class="setting-row">
               <label for="screensaver-idle-select">Auto-Launch Timeout</label>
               <select id="screensaver-idle-select" class="search-input">

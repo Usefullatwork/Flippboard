@@ -299,7 +299,7 @@ body.backdrop-pitch-black {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 1120px;
+  max-width: 1276px;
   background: rgba(19, 23, 34, 0.7);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);

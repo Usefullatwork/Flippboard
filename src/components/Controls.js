@@ -3,6 +3,7 @@ export class ControlsComponent {
     this.onModeChange = options.onModeChange;
     this.onNextClick = options.onNextClick;
     this.onPrevClick = options.onPrevClick;
+    this.onCategoryClick = options.onCategoryClick;
     this.onPlayPauseToggle = options.onPlayPauseToggle;
     this.onShuffleClick = options.onShuffleClick;
     this.onIntervalChange = options.onIntervalChange;
@@ -104,34 +105,52 @@ export class ControlsComponent {
     });
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && document.body.classList.contains('kiosk-mode')) {
-        document.body.classList.remove('kiosk-mode');
-        exitKioskBtn.classList.add('hidden');
-        if (this.onKioskToggle) this.onKioskToggle(false);
+      if (e.key === 'Escape') {
+        if (document.body.classList.contains('kiosk-mode')) {
+          document.body.classList.remove('kiosk-mode');
+          exitKioskBtn.classList.add('hidden');
+          if (this.onKioskToggle) this.onKioskToggle(false);
+        } else if (navigator.userAgent.includes('Electron') &&
+                   !document.querySelector('.modal-overlay:not(.hidden)')) {
+          // Desktop app: Esc outside screensaver closes the program
+          window.close();
+        }
         return;
       }
 
-      // Hotkeys — skip while typing or while a modal is open
+      // Hotkeys — skip while typing or while a modal is open.
+      // They stay live in screensaver mode (IdleDetector ignores keys).
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.target.closest && e.target.closest('input, textarea, select')) return;
       if (document.querySelector('.modal-overlay:not(.hidden)')) return;
 
       switch (e.key) {
         case ' ':
+        case 's':
+        case 'S':
+        case 'ArrowDown':
           e.preventDefault(); // don't scroll / re-trigger focused button
           playPauseBtn.click();
           break;
         case 'ArrowRight':
+        case 'd':
+        case 'D':
         case 'n':
         case 'N':
+          e.preventDefault();
           document.getElementById('btn-next-quote').click();
           break;
         case 'ArrowLeft':
+        case 'a':
+        case 'A':
+          e.preventDefault();
           if (this.onPrevClick) this.onPrevClick();
           break;
-        case 's':
-        case 'S':
-          document.getElementById('btn-shuffle').click();
+        case 'ArrowUp':
+        case 'w':
+        case 'W':
+          e.preventDefault();
+          if (this.onCategoryClick) this.onCategoryClick();
           break;
         case 'f':
         case 'F':

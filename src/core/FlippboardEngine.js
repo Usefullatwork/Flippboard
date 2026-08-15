@@ -218,6 +218,21 @@ export class FlippboardEngine {
   }
 
   /**
+   * Index of the first quote (searching forward, wrapping) whose category
+   * differs from the current quote's — i.e. the start of the next category.
+   */
+  static getNextCategoryIndex(quotesList, currentIndex) {
+    const n = quotesList ? quotesList.length : 0;
+    if (n === 0) return 0;
+    const current = quotesList[currentIndex]?.category;
+    for (let step = 1; step <= n; step++) {
+      const j = (currentIndex + step) % n;
+      if (quotesList[j].category !== current) return j;
+    }
+    return currentIndex; // whole list is one category
+  }
+
+  /**
    * Generate Live Time String formatted for Flippboard Clock Mode.
    */
   static getClockMessage() {

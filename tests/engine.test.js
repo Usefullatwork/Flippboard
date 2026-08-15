@@ -98,7 +98,7 @@ describe('formatTextToMatrix', () => {
 });
 
 describe('getClockMessage', () => {
-  const PRESETS = [[6, 22], [4, 15], [8, 30], [10, 40]];
+  const PRESETS = [[6, 22], [4, 15], [8, 30], [10, 40], [6, 30], [8, 22], [12, 48]];
 
   it.each(PRESETS)('fits %ix%i without truncation', (rows, cols) => {
     FlippboardEngine.setMatrixDimensions(rows, cols);
@@ -160,6 +160,25 @@ describe('validateQuote', () => {
     FlippboardEngine.setMatrixDimensions(4, 15);
     const res = FlippboardEngine.validateQuote(Array(6).fill('ROW').join('\n'));
     expect(res.overflowRows).toBe(2);
+  });
+});
+
+describe('getNextCategoryIndex', () => {
+  const list = [
+    { id: 1, category: 'a' }, { id: 2, category: 'a' },
+    { id: 3, category: 'b' }, { id: 4, category: 'b' },
+    { id: 5, category: 'c' }
+  ];
+
+  it('jumps to the first quote of the next category, wrapping around', () => {
+    expect(FlippboardEngine.getNextCategoryIndex(list, 0)).toBe(2);
+    expect(FlippboardEngine.getNextCategoryIndex(list, 3)).toBe(4);
+    expect(FlippboardEngine.getNextCategoryIndex(list, 4)).toBe(0);
+  });
+
+  it('stays put on single-category and handles empty lists', () => {
+    expect(FlippboardEngine.getNextCategoryIndex([{ category: 'x' }, { category: 'x' }], 1)).toBe(1);
+    expect(FlippboardEngine.getNextCategoryIndex([], 0)).toBe(0);
   });
 });
 

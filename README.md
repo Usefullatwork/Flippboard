@@ -1,6 +1,6 @@
 # Flippboard Studio 🎞️
 
-> A 3D mechanical split-flap display software & ambient desktop screensaver. Inspired by classic retro train station departure boards, Vestaboard, and airport messaging matrixes.
+> A 3D mechanical split-flap display software & ambient desktop screensaver. Inspired by classic retro train station departure boards, Vestaboard, and airport messaging matrices.
 
 [![Vite Build](https://img.shields.io/badge/Vite-5.4-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
@@ -19,8 +19,8 @@ No Node.js, no terminal — grab a ready-to-run build from
 
 | File | What it does |
 |------|--------------|
-| `Flippboard Setup 1.0.0.exe` | One-click installer. Double-click → installs → opens straight into the board fullscreen. Adds a desktop shortcut. |
-| `Flippboard 1.0.0.exe` | Portable — no install, just run it. |
+| `Flippboard Setup 1.1.0.exe` | One-click installer. Double-click → installs → opens straight into the board fullscreen. Adds a desktop shortcut. |
+| `Flippboard 1.1.0.exe` | Portable — no install, just run it. |
 
 First launch: Windows Defender may ask to allow network access — that's the
 local webhook server (see below); allow it on private networks, or press
@@ -34,11 +34,7 @@ quotes persist in `%APPDATA%\Flippboard`.
 ## ✨ Features
 
 - ⚙️ **Pure CSS 3D Mechanical Engine**: Physics-based split-flap leaves using `rotateX(-180deg)` 3D transforms, container queries (`cqw`), mechanical hinge pins, and light reflections.
-- 📐 **Multiple Matrix Presets**:
-  - **Standard**: 6 rows × 22 columns (132 flaps)
-  - **Compact**: 4 rows × 15 columns (60 flaps)
-  - **Widescreen**: 8 rows × 30 columns (240 flaps)
-  - **Giant Wall**: 10 rows × 40 columns (400 flaps)
+- 📐 **7 Matrix Presets**: Compact 4×15 · Standard 6×22 · Wide 6×30 · Tall 8×22 · Widescreen 8×30 · Giant Wall 10×40 · Mega Wall 12×48.
 - ⏱️ **4 Playback Modes**:
   - **Sequential / Random**: Cycle through curated or custom quote collections.
   - **Daily Quote**: Deterministic "Quote of the Day" powered by date hashing.
@@ -47,7 +43,7 @@ quotes persist in `%APPDATA%\Flippboard`.
   - Insert vibrant accent tiles (`{red}`, `{orange}`, `{yellow}`, `{green}`, `{blue}`, `{violet}`, `{white}`, `{black}`).
   - Dynamic mini-board preview grid syncing with current matrix size.
 - 🔊 **Procedural Web Audio Synthesizer**: Organic multi-layer plastic slap, mid-range body resonance, and low-frequency solenoid thud with pitch/volume jitter per click.
-- 🖥️ **Desktop Screensaver & Kiosk Mode**: Auto-launches fullscreen after a configurable idle timeout (15s–10min, or manual-only); exits on mouse move, Esc, or the exit button.
+- 🖥️ **Desktop Screensaver & Kiosk Mode**: Auto-launches fullscreen after a configurable idle timeout (15s–10min, or manual-only); exits only on Esc or a click — hotkeys keep controlling playback without waking it.
 - 🌌 **5 Ambient Wall Backdrops**: Dark Studio, Warm Living Room, Modern Gallery, Neon Cyberpunk, and OLED Pitch Black — plus 4 frame finishes (Obsidian, Walnut, Silver, Neon).
 - 💾 **Persistent Settings**: Matrix size, zoom, fonts, themes, sound, and screensaver timing survive reloads via localStorage — set it once on your wall display.
 - ✅ **Quote Validation**: The composer warns live when a message won't fit the board, uses characters that don't exist on the flap drum, or duplicates an existing quote — imports are checked too.
@@ -58,8 +54,8 @@ quotes persist in `%APPDATA%\Flippboard`.
 
 ## ⚙️ Settings & Quote Manager
 
-Everything lives in the two modals — flap font, matrix size (6×22 up to
-10×40), zoom, backdrops, screensaver idle timer, and the webhook receiver
+Everything lives in the two modals — flap font, matrix size (4×15 up to
+12×48), zoom, backdrops, screensaver idle timer, and the webhook receiver
 info in **Settings**; curated collections, your saved messages, and the
 composer with live board preview + validation in **Quote Library**.
 
@@ -155,16 +151,19 @@ Output files land in `dist/`. The board, quotes, clock, and screensaver are full
 
 | Key | Action |
 |-----|--------|
-| `Space` | Play / pause auto-flip |
-| `N` or `→` | Next quote |
-| `←` | Previous quote |
-| `S` | Shuffle (random quote) |
+| `D` / `N` / `→` | Next quote |
+| `A` / `←` | Previous quote |
+| `W` / `↑` | Jump to next category |
+| `S` / `↓` / `Space` | Play / pause auto-flip |
 | `F` | Toggle fullscreen screensaver / kiosk mode |
-| `Esc` | Exit screensaver / fullscreen |
+| `Esc` | Exit screensaver — in the desktop app, a second `Esc` closes the program |
 | `Enter` | Send Quick Message (in control dock input) |
 | Click | Unlock Web Audio context & interact with controls |
 
-Hotkeys are disabled while typing in an input or while a modal is open.
+Hotkeys keep working **inside screensaver mode** — flip quotes, switch
+category, or pause without waking it. Only `Esc` or a mouse click exits the
+screensaver (mouse movement is ignored). Hotkeys are disabled while typing
+in an input or while a modal is open.
 
 ---
 

@@ -21,7 +21,7 @@ export class IdleDetector {
   bindEvents() {
     const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'pointermove'];
 
-    this.handleUserActivity = () => {
+    this.handleUserActivity = (e) => {
       if (!this.enabled) return;
       // Entering fullscreen can synthesize a mousemove; ignore activity for a
       // short grace window after going idle so the screensaver isn't
@@ -29,6 +29,10 @@ export class IdleDetector {
       if (this.isIdle && Date.now() < this._graceUntil) return;
 
       if (this.isIdle) {
+        // Screensaver is sticky: only a deliberate click/tap wakes it.
+        // Esc routes through Controls (markActive); other keys control
+        // playback without exiting; mouse jiggle stays ignored.
+        if (e.type !== 'mousedown' && e.type !== 'touchstart') return;
         this.isIdle = false;
         if (this.onIdleEnd) this.onIdleEnd();
       }

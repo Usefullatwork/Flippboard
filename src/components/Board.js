@@ -161,9 +161,9 @@ export class BoardComponent {
   setDimensions(rows, cols) {
     this.screenElement.style.setProperty('--board-rows', rows);
     this.screenElement.style.setProperty('--board-cols', cols);
-    // Physical width scales with column count (~50px/col, 22 cols = 1100px);
+    // Physical width scales with column count (~58px/col, 22 cols = 1276px);
     // consumed by .vestaboard-screen width calc in vestaboard.css
-    this.screenElement.style.setProperty('--board-width', `${cols * 50}px`);
+    this.screenElement.style.setProperty('--board-width', `${cols * 58}px`);
 
     // Compute exact grid aspect ratio and provide it to CSS to avoid calc() division parsing bugs
     const aspectRatio = (cols * 42) / (rows * 60);
