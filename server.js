@@ -70,15 +70,24 @@ app.post('/api/webhook', (req, res) => {
   res.status(200).json({ success: true, message: 'Webhook broadcasted to displays' });
 });
 
-app.listen(PORT, () => {
-  console.log(`\n=== Flippboard Studio Backend Server ===`);
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Webhook URL: http://localhost:${PORT}/api/webhook\n`);
-}).on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is already in use — is another Flippboard server running?`);
-  } else {
-    console.error('Server failed to start:', err.message);
-  }
-  process.exit(1);
-});
+// Also imported by electron/main.js — error handling stays with the caller
+export function startServer(port = PORT) {
+  return app.listen(port, () => {
+    console.log(`\n=== Flippboard Studio Backend Server ===`);
+    console.log(`Server running on http://localhost:${port}`);
+    console.log(`Webhook URL: http://localhost:${port}/api/webhook\n`);
+  });
+}
+
+// CLI: `node server.js` behaves exactly as before
+import { pathToFileURL } from 'url';
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  startServer().on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Port ${PORT} is already in use — is another Flippboard server running?`);
+    } else {
+      console.error('Server failed to start:', err.message);
+    }
+    process.exit(1);
+  });
+}

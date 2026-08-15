@@ -3,18 +3,42 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "server": "node server.js",
     "start": "vite build && node server.js",
+    "electron": "vite build && electron .",
+    "dist": "vite build && electron-builder --win",
     "test": "vitest run"
+  },
+  "build": {
+    "appId": "com.flippboard.studio",
+    "productName": "Flippboard",
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "files": [
+      "electron/**",
+      "server.js",
+      "dist/**",
+      "package.json"
+    ]
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
+    "electron": "^43.4.0",
+    "electron-builder": "^26.15.3",
     "jsdom": "^25.0.1",
     "vite": "^5.4.2",
     "vitest": "^2.1.9"
