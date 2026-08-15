@@ -183,6 +183,19 @@ body.backdrop-pitch-black {
   gap: 0.5rem;
 }
 
+.update-chip {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(244, 180, 26, 0.25), rgba(244, 180, 26, 0.1));
+  color: var(--accent-gold);
+  border: 1px solid rgba(244, 180, 26, 0.4);
+  align-self: center;
+  white-space: nowrap;
+}
+
 .brand-text h1 .badge {
   font-size: 0.65rem;
   background: linear-gradient(135deg, var(--accent-gold), #e09f00);

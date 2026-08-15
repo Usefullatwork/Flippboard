@@ -70,6 +70,9 @@ app.post('/api/webhook', (req, res) => {
   res.status(200).json({ success: true, message: 'Webhook broadcasted to displays' });
 });
 
+// Electron main registers its update endpoints on this app (same process)
+export { app as webApp };
+
 // Also imported by electron/main.js — error handling stays with the caller
 export function startServer(port = PORT) {
   return app.listen(port, () => {

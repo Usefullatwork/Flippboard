@@ -12,6 +12,7 @@ export class SettingsModalComponent {
     this.onZoomChange = options.onZoomChange;
     this.onViewportFillChange = options.onViewportFillChange;
     this.onAudioSettingsChange = options.onAudioSettingsChange;
+    this.onUpdateCheckChange = options.onUpdateCheckChange;
 
     this.bindDOM();
   }
@@ -46,6 +47,8 @@ export class SettingsModalComponent {
     if (soundCheck) soundCheck.checked = s.audioEnabled;
     const volumeSlider = document.getElementById('setting-sound-volume');
     if (volumeSlider) volumeSlider.value = s.audioVolume;
+    const updateCheckBox = document.getElementById('setting-update-check');
+    if (updateCheckBox) updateCheckBox.checked = s.updateCheck !== false;
 
     // Header sound button icon shares this state
     const audioBtn = document.getElementById('btn-audio-toggle');
@@ -180,5 +183,13 @@ export class SettingsModalComponent {
       audioEngine.setVolume(vol);
       if (this.onAudioSettingsChange) this.onAudioSettingsChange({ audioVolume: vol });
     });
+
+    // Update-on-launch toggle (desktop app only; group is hidden in browsers)
+    const updateCheckBox = document.getElementById('setting-update-check');
+    if (updateCheckBox) {
+      updateCheckBox.addEventListener('change', (e) => {
+        if (this.onUpdateCheckChange) this.onUpdateCheckChange(e.target.checked);
+      });
+    }
   }
 }

@@ -155,6 +155,7 @@ class VestaboardStudioApp {
         this.displayCurrentQuote();
       },
       onAudioSettingsChange: (patch) => save(patch),
+      onUpdateCheckChange: (enabled) => save({ updateCheck: enabled }),
       onMatrixSizeChange: (rows, cols) => {
         save({ rows, cols });
         this.applyMatrixSize(rows, cols);
@@ -226,6 +227,57 @@ class VestaboardStudioApp {
     });
 
     this.startTimer();
+    this.initUpdates();
+  }
+
+  // Desktop-app update UI: talks to the update endpoints electron/main.js
+  // registers on the local server. No-op in a plain browser.
+  initUpdates() {
+    if (!navigator.userAgent.includes('Electron')) return;
+    const group = document.getElementById('settings-updates-group');
+    if (group) group.classList.remove('hidden');
+
+    const versionEl = document.getElementById('update-version-label');
+    const statusEl = document.getElementById('update-status-label');
+    const chip = document.getElementById('update-ready-chip');
+    let lastState = 'idle';
+    const render = (s) => {
+      lastState = s.state;
+      if (versionEl) versionEl.textContent = `v${s.current}`;
+      const text = {
+        idle: '',
+        checking: 'Checking for updates...',
+        downloading: `Downloading v${s.available}...`,
+        'up-to-date': 'You are up to date.',
+        ready: `v${s.available} downloaded — quit and reopen to apply.`,
+        error: 'Update check failed (no internet connection?).',
+        dev: 'Dev build — update checks are disabled.'
+      }[s.state] ?? '';
+      if (statusEl) statusEl.textContent = text;
+      if (chip) chip.classList.toggle('hidden', s.state !== 'ready');
+    };
+    const fetchStatus = async () => {
+      try { render(await (await fetch('/api/update/status')).json()); } catch (e) { /* server gone */ }
+    };
+
+    let pollTimer = null;
+    const checkForUpdates = () => {
+      fetch('/api/update/check', { method: 'POST' }).catch(() => {});
+      clearInterval(pollTimer);
+      let ticks = 0;
+      pollTimer = setInterval(async () => {
+        await fetchStatus();
+        // stop on any terminal state, or after ~2 min as a backstop
+        const done = ['up-to-date', 'ready', 'error', 'dev'].includes(lastState);
+        if (++ticks > 40 || done) clearInterval(pollTimer);
+      }, 3000);
+    };
+
+    const checkBtn = document.getElementById('btn-check-updates');
+    if (checkBtn) checkBtn.addEventListener('click', checkForUpdates);
+
+    fetchStatus(); // show installed version right away
+    if (this.settings.updateCheck !== false) checkForUpdates();
   }
 
   enterScreensaverMode() {

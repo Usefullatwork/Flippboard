@@ -16,7 +16,8 @@ export const DEFAULT_SETTINGS = {
   speed: 'realistic',
   audioEnabled: true,
   audioVolume: 0.5,
-  idleTimeout: 60
+  idleTimeout: 60,
+  updateCheck: true
 };
 
 export function loadSettings() {
