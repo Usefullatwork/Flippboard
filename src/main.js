@@ -8,6 +8,7 @@ import { audioEngine } from './audio/FlapAudioEngine.js';
 import { IdleDetector } from './screensaver/IdleDetector.js';
 import { AmbientBackdrop } from './screensaver/AmbientBackdrop.js';
 import { loadSettings, saveSettings, loadCustomQuotes, saveCustomQuotes } from './core/settings.js';
+import { Playback } from './core/Playback.js';
 
 class VestaboardStudioApp {
   constructor() {
@@ -15,10 +16,7 @@ class VestaboardStudioApp {
     this.allQuotes = [...DEFAULT_QUOTES, ...this.customQuotes];
     this.settings = loadSettings();
 
-    this.currentIndex = 0;
-    this.currentMode = 'sequential'; // 'sequential', 'random', 'daily', 'clock'
-    this.intervalSeconds = 30;
-    this.isPlaying = true;
+    this.playback = new Playback(this.allQuotes);
     this.timerId = null;
     this.clockTickerId = null;
 
@@ -64,7 +62,7 @@ class VestaboardStudioApp {
           if (this.webhookRestoreTimer) clearTimeout(this.webhookRestoreTimer);
           this.webhookRestoreTimer = setTimeout(() => {
             this.webhookRestoreTimer = null;
-            if (this.isPlaying) this.startTimer();
+            if (this.playback.isPlaying) this.startTimer();
           }, 15000);
         }
       };
@@ -262,6 +260,7 @@ class VestaboardStudioApp {
     }
 
     this.allQuotes = [...DEFAULT_QUOTES, ...this.customQuotes];
+    this.playback.setQuotes(this.allQuotes);
     saveCustomQuotes(this.customQuotes);
     this.quoteManager.customQuotes = this.customQuotes;
     this.quoteManager.renderCustomQuotes();
@@ -270,6 +269,7 @@ class VestaboardStudioApp {
   deleteCustomQuote(quoteId) {
     this.customQuotes = this.customQuotes.filter(q => q.id !== quoteId);
     this.allQuotes = [...DEFAULT_QUOTES, ...this.customQuotes];
+    this.playback.setQuotes(this.allQuotes);
     saveCustomQuotes(this.customQuotes);
     this.quoteManager.customQuotes = this.customQuotes;
     this.quoteManager.renderCustomQuotes();
@@ -278,6 +278,7 @@ class VestaboardStudioApp {
   handleImportQuotes(imported) {
     this.customQuotes = [...this.customQuotes, ...imported];
     this.allQuotes = [...DEFAULT_QUOTES, ...this.customQuotes];
+    this.playback.setQuotes(this.allQuotes);
     saveCustomQuotes(this.customQuotes);
     this.quoteManager.customQuotes = this.customQuotes;
     this.quoteManager.renderCustomQuotes();
@@ -288,37 +289,27 @@ class VestaboardStudioApp {
       clearInterval(this.clockTickerId);
       this.clockTickerId = null;
     }
-    if (this.currentMode === 'clock') {
+    if (this.playback.mode === 'clock') {
       this.clockTickerId = setInterval(() => {
-        if (this.currentMode === 'clock') {
-          const clockMsg = VestaboardEngine.getClockMessage();
-          this.board.displayMessage(clockMsg);
-          this.updateMetaUI('Live Flip Clock', 'Vestaboard Studio', 'Clock Mode');
+        if (this.playback.mode === 'clock') {
+          this.displayCurrentQuote();
         }
       }, 1000);
     }
   }
 
-  displayCurrentQuote() {
-    if (this.currentMode === 'clock') {
-      const clockMsg = VestaboardEngine.getClockMessage();
-      this.board.displayMessage(clockMsg);
+  // Render a display descriptor from the Playback state machine
+  render(d) {
+    if (d.kind === 'clock') {
+      this.board.displayMessage(d.text);
       this.updateMetaUI('Live Flip Clock', 'Vestaboard Studio', 'Clock Mode');
-      return;
+    } else if (d.kind === 'daily' || d.kind === 'indexed') {
+      this.displayQuote(d.quote);
     }
+  }
 
-    if (this.currentMode === 'daily') {
-      const dailyQuote = VestaboardEngine.getDailyQuote(this.allQuotes);
-      if (dailyQuote) {
-        this.displayQuote(dailyQuote);
-      }
-      return;
-    }
-
-    if (this.allQuotes.length > 0) {
-      const quote = this.allQuotes[this.currentIndex];
-      this.displayQuote(quote);
-    }
+  displayCurrentQuote() {
+    this.render(this.playback.current());
   }
 
   displayQuote(quote) {
@@ -334,70 +325,37 @@ class VestaboardStudioApp {
     if (sourceLabel) sourceLabel.textContent = `— ${author}`;
   }
 
-  // Manual navigation shows the indexed quote even in daily mode (the timer
-  // keeps re-displaying the daily quote — see displayCurrentQuote)
-  displayIndexedQuote() {
-    if (this.currentMode === 'daily' && this.allQuotes.length > 0) {
-      this.displayQuote(this.allQuotes[this.currentIndex]);
-    } else {
-      this.displayCurrentQuote();
-    }
+  // Restart the auto-flip timer after a transition — but not in clock mode,
+  // where transitions are display-only (pre-extraction early-return behavior)
+  restartTimerAfterNav() {
+    if (this.playback.mode !== 'clock' && this.playback.isPlaying) this.startTimer();
   }
 
   flipToNextQuote(manual = false) {
-    if (this.currentMode === 'clock') {
-      this.displayCurrentQuote();
-      return;
-    }
-
-    if (this.currentMode === 'random') {
-      this.currentIndex = Math.floor(Math.random() * this.allQuotes.length);
-    } else {
-      this.currentIndex = (this.currentIndex + 1) % this.allQuotes.length;
-    }
-
-    if (manual) this.displayIndexedQuote();
-    else this.displayCurrentQuote();
-    if (this.isPlaying) this.startTimer();
+    this.render(this.playback.next(manual));
+    this.restartTimerAfterNav();
   }
 
   flipToPrevQuote() {
-    if (this.currentMode === 'clock') {
-      this.displayCurrentQuote();
-      return;
-    }
-
-    if (this.currentMode === 'random') {
-      this.currentIndex = Math.floor(Math.random() * this.allQuotes.length);
-    } else {
-      this.currentIndex = (this.currentIndex - 1 + this.allQuotes.length) % this.allQuotes.length;
-    }
-
-    this.displayIndexedQuote();
-    if (this.isPlaying) this.startTimer();
+    this.render(this.playback.prev());
+    this.restartTimerAfterNav();
   }
 
   flipToNextCategory() {
-    if (this.currentMode === 'clock') {
-      this.displayCurrentQuote();
-      return;
-    }
-
-    this.currentIndex = VestaboardEngine.getNextCategoryIndex(this.allQuotes, this.currentIndex);
-    this.displayIndexedQuote();
-    if (this.isPlaying) this.startTimer();
+    this.render(this.playback.jumpCategory());
+    this.restartTimerAfterNav();
   }
 
   handleModeChange(mode) {
-    this.currentMode = mode;
+    this.playback.setMode(mode);
     this.updateClockTicker();
     this.displayCurrentQuote();
-    if (this.isPlaying) this.startTimer();
+    if (this.playback.isPlaying) this.startTimer();
   }
 
   handlePlayPause(isPlaying) {
-    this.isPlaying = isPlaying;
-    if (this.isPlaying) {
+    this.playback.isPlaying = isPlaying;
+    if (isPlaying) {
       this.startTimer();
     } else {
       this.stopTimer();
@@ -405,14 +363,13 @@ class VestaboardStudioApp {
   }
 
   handleShuffle() {
-    this.currentIndex = Math.floor(Math.random() * this.allQuotes.length);
-    this.displayIndexedQuote();
-    if (this.isPlaying) this.startTimer();
+    this.render(this.playback.shuffle());
+    if (this.playback.isPlaying) this.startTimer();
   }
 
   handleIntervalChange(seconds) {
-    this.intervalSeconds = seconds;
-    if (this.isPlaying) {
+    this.playback.intervalSeconds = seconds;
+    if (this.playback.isPlaying) {
       this.startTimer();
     }
   }
@@ -424,16 +381,16 @@ class VestaboardStudioApp {
       category: 'custom'
     };
     this.displayQuote(customQuote);
-    if (this.isPlaying) this.startTimer();
+    if (this.playback.isPlaying) this.startTimer();
   }
 
   startTimer() {
     this.stopTimer();
     this.timerId = setInterval(() => {
-      if (this.isPlaying) {
+      if (this.playback.isPlaying) {
         this.flipToNextQuote();
       }
-    }, this.intervalSeconds * 1000);
+    }, this.playback.intervalSeconds * 1000);
   }
 
   stopTimer() {
