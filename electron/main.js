@@ -1,4 +1,5 @@
 import { app, BrowserWindow, dialog } from 'electron';
+import electronUpdater from 'electron-updater'; // CJS package — no named ESM exports
 import { startServer } from '../server.js';
 
 const PORT = 5000; // client SSE hardcodes :5000 — no fallback port possible
@@ -17,6 +18,14 @@ app.whenReady().then(() => {
   server.on('listening', () => {
     const win = new BrowserWindow({ fullscreen: true, autoHideMenuBar: true });
     win.loadURL(`http://localhost:${PORT}`);
+
+    // Auto-update from GitHub Releases; downloads in background, installs on
+    // quit. Must never take the app down — offline/rate-limited is normal.
+    if (app.isPackaged) {
+      electronUpdater.autoUpdater.checkForUpdatesAndNotify().catch((err) => {
+        console.log('Update check failed (offline?):', err.message);
+      });
+    }
   });
 });
 

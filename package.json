@@ -31,6 +31,13 @@
       "server.js",
       "dist/**",
       "package.json"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Usefullatwork",
+        "repo": "Flippboard"
+      }
     ]
   },
   "engines": {
@@ -46,6 +53,7 @@
   },
   "dependencies": {
     "cors": "^2.8.6",
+    "electron-updater": "^6.8.9",
     "express": "^5.2.1"
   }
 }

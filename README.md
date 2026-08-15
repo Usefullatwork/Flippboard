@@ -146,6 +146,10 @@ npm run build
 ```
 Output files land in `dist/`. The board, quotes, clock, and screensaver are fully static and can be deployed to Vercel, Netlify, Cloudflare Pages, or GitHub Pages — **but the webhook/SSE integration requires the Node server**, so on static hosts that feature is disabled. For the full experience on a wall display, use `npm start` on a machine on your LAN.
 
+### Releasing (auto-update)
+
+The desktop app checks GitHub Releases on launch (electron-updater) and installs updates on quit. For that to work, every release **must** include the three files `npm run dist` writes to `release/`: `Flippboard Setup <version>.exe`, the matching `.blockmap`, and `latest.yml` — a release with only the exe breaks auto-update. Bump `version` in `package.json` first; the portable exe never auto-updates.
+
 ---
 
 ## 🎹 Keyboard & Mouse Shortcuts
