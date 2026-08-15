@@ -88,6 +88,14 @@ export class ControlsComponent {
       if (this.onAudioToggle) this.onAudioToggle(!isMuted);
     });
 
+    // Quit button — desktop app only (browser tabs have their own close;
+    // same UA gate as the Esc-quits-app handler below)
+    const quitBtn = document.getElementById('btn-quit-app');
+    if (quitBtn && navigator.userAgent.includes('Electron')) {
+      quitBtn.classList.remove('hidden');
+      quitBtn.addEventListener('click', () => window.close());
+    }
+
     // Kiosk Fullscreen Mode
     const kioskBtn = document.getElementById('btn-kiosk');
     const exitKioskBtn = document.getElementById('btn-exit-kiosk');

@@ -205,6 +205,19 @@ class VestaboardStudioApp {
       this.displayCurrentQuote();
     }
 
+    // Measure the fixed chrome around the board (header + status bar + dock +
+    // margins/frame, see .vestaboard-screen width calc) so the CSS height-fit
+    // stays correct across dock breakpoints and future layout changes
+    const fitBoard = () => {
+      const h = document.querySelector('.app-header')?.offsetHeight || 0;
+      const s = document.querySelector('.display-status-bar')?.offsetHeight || 0;
+      const d = document.querySelector('.control-dock')?.offsetHeight || 0;
+      // 242px = main padding/gaps + viewport padding + frame border/padding + screen padding
+      document.documentElement.style.setProperty('--board-chrome', `${h + s + d + 242}px`);
+    };
+    fitBoard();
+    window.addEventListener('resize', fitBoard);
+
     // Sync Kiosk mode state if user presses ESC to exit native fullscreen
     document.addEventListener('fullscreenchange', () => {
       if (!document.fullscreenElement && document.body.classList.contains('kiosk-mode')) {

@@ -469,8 +469,15 @@ body.font-roboto { --flap-font-family: 'Roboto Mono', monospace; --flap-font-wei
   padding: 12px;
   border-radius: 12px;
   box-shadow: inset 0 6px 15px rgba(0, 0, 0, 0.9);
-  width: calc(var(--board-width, 1100px) * var(--board-scale, 1));
-  max-width: calc(100vw * var(--board-scale, 1) - 96px); /* Accommodate frame padding + borders */
+  /* Fit width, viewport width, AND viewport height so the bottom flap row and
+     the dock never clip in studio mode. --board-chrome = measured height of
+     header+status+dock+fixed margins, set by fitBoard() in main.js.
+     Kiosk/fill-viewport override below has its own 95vh fit. */
+  width: min(
+    calc(var(--board-width, 1100px) * var(--board-scale, 1)),
+    calc(100vw * var(--board-scale, 1) - 96px),
+    calc((100vh - var(--board-chrome, 460px)) * var(--board-aspect-ratio, 2.566) * var(--board-scale, 1))
+  );
   margin: 0 auto;
   container-type: inline-size;
 }
@@ -655,7 +662,8 @@ body.font-roboto { --flap-font-family: 'Roboto Mono', monospace; --flap-font-wei
    ========================================================================== */
 .control-dock {
   width: 100%;
-  max-width: 1120px;
+  /* 4 dock groups need ~1240px of panel; 1120 crushed the interval group */
+  max-width: 1400px;
 }
 
 .dock-panel {
@@ -776,9 +784,14 @@ input[type="range"]::-webkit-slider-thumb:hover {
   box-shadow: 0 0 16px rgba(244, 180, 26, 0.8);
 }
 
-/* Quick Input Group */
+/* Quick Input Group — min-width 0 so the dock grid can shrink it instead of
+   letting the input spill outside the panel on narrow windows */
 .quick-input-group {
-  min-width: 320px;
+  min-width: 0;
+}
+
+.dock-panel > .control-group {
+  min-width: 0;
 }
 
 .input-with-button {
@@ -788,6 +801,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .input-with-button input {
   flex: 1;
+  min-width: 0;
   background: rgba(11, 13, 18, 0.9);
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -1269,11 +1283,15 @@ body.kiosk-mode .board-viewport {
 }
 
 /* Media Queries & Responsive Scaling */
-@media (max-width: 1024px) {
+/* 4-column dock needs ~1350px of panel; wrap to 2x2 well before it crushes
+   the interval/quick-message groups into each other */
+@media (max-width: 1450px) {
   .dock-panel {
     grid-template-columns: 1fr 1fr;
   }
-  
+}
+
+@media (max-width: 1024px) {
   .vestaboard-frame {
     transform: scale(0.85);
   }
